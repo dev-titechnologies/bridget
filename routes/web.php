@@ -10,6 +10,10 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('/', function () {
+    return view('welcome');
+});
+
 Route::get('fire/{message}', function ($message) {    
 	event(new App\Events\EventName($message,'test-channel1'));
 	return "event fired";
