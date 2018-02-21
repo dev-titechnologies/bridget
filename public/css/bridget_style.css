@@ -141,7 +141,7 @@ body {
   /* border-radius: 10px; */
   /* background-color: rgba(25, 147, 147, 0.2); */
   word-wrap: break-word;
-  /* max-width: 81%; */
+  max-width: 100%;
   color:#1b1b1b;
   /* border-bottom: 1px solid #e8e2e2; */
 }
