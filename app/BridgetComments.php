@@ -16,7 +16,7 @@ class BridgetComments extends Eloquent
 		->where('url','=',$url)
 		->skip($startFrom*$limit)
 		->orderBy('created_at','desc')
-		->take($limit)
+		/*->take($limit)*/
 		->get();
 	}
 
@@ -49,9 +49,9 @@ class BridgetComments extends Eloquent
 		return $bridgetComment;
 	}
 
-	public static function updateCommentUserByPk($commentId,$userName)
+	public static function updateCommentByFingerPrint($fingerPrint,$userName)
 	{
-		return self::where('_id', $commentId)
+		return self::where('browser_fingerprint','=',$fingerPrint)
 		->update(['username' => $userName]);
 	}
 }
