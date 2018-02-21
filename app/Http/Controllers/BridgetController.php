@@ -15,14 +15,20 @@ class BridgetController extends Controller
 	{
 		$fingerprint=$request->input('fingerPrint');
 		$pageNumber=$request->input('page_num')?$request->input('page_num'):0;
-		$param = $request->query('bridget_url');		
+		$param = $request->input('bridget_url');
+		
 		session()->put('fingerPrint', $fingerprint);
 		$parentComments=BridgetComments::getParents($param,$pageNumber);
-		BridgetUrl::addUrl($param);
+		if(!BridgetUrl::isUrlExist($param)){
+			BridgetUrl::addUrl($param);
+		}
+		$url=BridgetUrl::getId($param);
+
 		$parentComments=$parentComments->reverse();
 		return view("bridget.messages", [
 			"param"=>$param,
-			"parentComments"=>$parentComments
+			"parentComments"=>$parentComments,
+			'channelId'=>$url->_id
 			]);		
 	}
 
@@ -31,15 +37,25 @@ class BridgetController extends Controller
 		$comment=$request->input('comment');
 		$parentId=$request->input('parent_id');
 		$url=$request->input('url');
+		$channel=BridgetUrl::getId($url);
 		$browserFingerPrint=Session::get('fingerPrint');
 		$userName=$request->input('username');
 		$comment=BridgetComments::addMessage($comment,$parentId,$url,$browserFingerPrint,$userName);
+		
 		if($comment){
 			if($parentId){
 				$commentHtml = view("bridget.childComment",compact('comment'))->render();
 			}else{
 				$commentHtml = view("bridget.comment",compact('comment'))->render();
+				$commentData=array(
+					'message'=> $commentHtml,
+					'username'=>$comment->username,
+					'commentId'=>$comment->_id,
+					'commentFingerPrint'=>$comment->browser_fingerprint
+					);
+				event(new \App\Events\SendMessage($commentData,$channel->_id));
 			}
+
 			return response()->json(['success'=>true,'message' => $commentHtml,'_id'=>$comment->_id]);
 		}else{
 			return response()->json(['success'=>false]);
@@ -58,8 +74,15 @@ class BridgetController extends Controller
 	{
 		$commentId=$request->input('_id');
 		$userName=$request->input('username');
+		$url=$request->input('pageUrl');
+		$channel=BridgetUrl::getId($url);
 		if(BridgetComments::updateCommentUserByPk($commentId,$userName))
 		{
+			$data=array(
+				'username'=>$userName,
+				'commentId'=>$commentId
+				);
+			event(new \App\Events\UpdateUserName($data,$channel->_id));
 			return response()->json(['success'=>true]);
 		}else{
 			return response()->json(['success'=>false]);

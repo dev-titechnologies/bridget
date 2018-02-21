@@ -5,7 +5,7 @@ use App\Events\Event;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Queue\SerializesModels;
 
-class SendMessage implements ShouldBroadcast
+class UpdateUserName implements ShouldBroadcast
 {
     use SerializesModels;
 
@@ -23,4 +23,3 @@ class SendMessage implements ShouldBroadcast
         return [$this->channel];
     }
 }
-

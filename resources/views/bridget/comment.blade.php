@@ -1,6 +1,6 @@
 
 <li id="comment-{{$comment->_id}}">
-	<b>{{ $comment->browser_fingerprint==Session::get('fingerPrint')?'me':$comment->username }}: </b> {{ $comment->comment }} <br>
+	<b><span id="commentuser-{{$comment->_id}}">{{ $comment->browser_fingerprint==Session::get('fingerPrint')?'me':$comment->username }}: </span></b> {{ $comment->comment }} <br>
 
 	<div class="child_comment_container" style="display: none;">
 

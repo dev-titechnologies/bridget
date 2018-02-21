@@ -2,10 +2,11 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
+use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
 
-class BridgetUrl extends Model
+class BridgetUrl extends Eloquent
 {
+	protected $collection = 'bridget_urls';
 
 	public static function addUrl($url)
 	{
@@ -15,6 +16,16 @@ class BridgetUrl extends Model
 	}
 
 	public static function isUrlExist($url){
-		self::where()
+		return self::where('url','=',$url)->count();
+	}
+
+	public static function getId($url)
+	{
+		return self::where('url','=',$url)->first();
+	}	
+
+	public static function totalCount()
+	{
+		return self::count();
 	}	
 }

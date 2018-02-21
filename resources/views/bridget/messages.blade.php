@@ -35,7 +35,7 @@ use App\BridgetComments;
 						<input class="name_field" type="text" placeholder='Enter your name here'>
 					</div> 
 					<div>
-					<span class="sub_text_time anonymous link pull-left anonymous-post">Or Post as anonymous.</span>
+						<span class="sub_text_time anonymous link pull-left anonymous-post">Or Post as anonymous.</span>
 						<span class="sub_text_time pull-right m-minus ">Press enter to send.</span>
 					</div> 
 				</div> 
@@ -48,11 +48,24 @@ use App\BridgetComments;
 		</div>
 	</div>
 </div>
+<script type="text/javascript" src="{{ URL::asset('js/socket.io.js') }}"></script>
+<script> 
+	var socket = io('http://192.168.1.57:3000');
+	var channel = "<?php echo $channelId; ?>:App\\Events\\SendMessage";
+	socket.on(channel, function(data){
 
+		displayNewMessage(data.data);
+	});
+	var channel = "<?php echo $channelId; ?>:App\\Events\\UpdateUserName";
+	socket.on(channel, function(data){
+
+		displayNewName(data.data);
+	});
+</script>
 <script type="text/javascript" src="{{ URL::asset('js/fingerprint.js') }}"></script>
 <script>
 	var pageUrl="<?php echo $param; ?>";
-	var fingerprint = new Fingerprint().get();
+	var fingerprint = "<?php echo Session::get('fingerPrint');?>";
 </script>
 <script type="text/javascript" src="{{ URL::asset('js/bridget_script.js') }}"></script>
 @stop

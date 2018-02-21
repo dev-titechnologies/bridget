@@ -79,16 +79,32 @@ function sendNewMessage()
 function ajaxSuccessComment(request)
 {
     request.done(function(response){ 
-        anonymousCommentId=response._id;      
-        $(domElements.messagesContainer).append(response.message);       
-        $(domElements.messageTextBox).val(''); 
+        anonymousCommentId=response._id;     
         getUserName();      
 
     });
 
     request.fail(function(jqXHR, textStatus) {
-       alert( "Request failed: " + textStatus );
-   });
+     alert( "Request failed: " + textStatus );
+ });
+}
+
+function displayNewMessage(data)
+{
+    $(domElements.messagesContainer).append(data.message); 
+    if(fingerprint!=data.commentFingerPrint){
+        $('#commentuser-'+data.commentId).html(data.username);
+    }   
+
+    $(domElements.messageTextBox).val('');
+    $(domElements.messagesContainer).finish().animate({
+        scrollTop: $(domElements.messagesContainer).prop("scrollHeight")
+    }, 2500);
+}
+
+function displayNewName(data)
+{
+   $('#commentuser-'+data.commentId).html(data.username); 
 }
 
 function getUserName()
@@ -122,7 +138,7 @@ function sendMsg(parentId,msg,url,fingerPrint)
             'comment':msg,
             'url':url,
             'fingerPrint':fingerPrint,
-            'username':localStorage.getItem('bridget-username')?localStorage.getItem('bridget-username'):''
+            'username':localStorage.getItem('bridget-username')?localStorage.getItem('bridget-username'):'Anonymous'
         },
         dataType: "json"
     });
@@ -150,19 +166,20 @@ function updateUserName(id,userName)
     data: {
         '_token': CSRF_TOKEN,
         '_id':id,
-        'username':userName
+        'username':userName,
+        'pageUrl':pageUrl
     },
     dataType: "json",
     beforeSend:function(){
-       $('#comment-box').attr('disabled',true); 
-       $('.user-replay').attr('disabled',true);
-   }
+     $('#comment-box').attr('disabled',true); 
+     $('.user-replay').attr('disabled',true);
+ }
 });
 }
 
 function getParentId(ele)
 {
- return $(ele).attr('id').split('-')[1];
+   return $(ele).attr('id').split('-')[1];
 }
 
 (function(){
@@ -208,9 +225,9 @@ function getParentId(ele)
     $(document).on('keypress',domElements.userReplayInput,function(e){    
         var keycode = (e.keyCode ? e.keyCode : e.which);
         if(keycode == '13'){
-         var $input=$(this);  
+           var $input=$(this);  
 
-         if(!$input.val()){
+           if(!$input.val()){
             return;
         }
 
@@ -228,7 +245,7 @@ function getParentId(ele)
 
     function ajaxSuccessReplay(request,$input)
     {
-       request.done(function(response) {
+     request.done(function(response) {
         anonymousCommentId=response._id;
         $input.parents('.comment_footer').find(domElements.allReplays).trigger("click");
         $input.val('');
@@ -236,26 +253,13 @@ function getParentId(ele)
         getUserName();
     });
 
-       request.fail(function(jqXHR, textStatus) {
-          alert( "Request failed: " + textStatus );
-      }); 
-   }
+     request.fail(function(jqXHR, textStatus) {
+      alert( "Request failed: " + textStatus );
+  }); 
+ }
 
-   function postMessage()
-   {
-     if($(domElements.messageTextBox).val()!=''){           
-         var request =sendMsg(null,$(domElements.messageTextBox).val(),pageUrl,fingerprint);
-         ajaxSuccessComment(request);
-     }       
-     else if($(selectedElement).parent('.comment_footer').find('.user-replay').val()!=''){
-        var parentId=getParentId($(selectedElement).parents('li'));
-        var request =sendMsg(parentId,$(selectedElement).parent('.comment_footer').find('.user-replay').val(),pageUrl,fingerprint);
-        ajaxSuccessReplay(request,$(selectedElement).parent('.comment_footer').find('.user-replay'))
-    }
 
-}
-
-$(document).on('click',domElements.anonymousPost,function(e){
+ $(document).on('click',domElements.anonymousPost,function(e){
     localStorage.setItem('bridget-username','Anonymous');
     if(anonymousCommentId!=''){
         updateUserName(anonymousCommentId,'Anonymous');
@@ -265,7 +269,7 @@ $(document).on('click',domElements.anonymousPost,function(e){
     $('.user-replay').attr('disabled',false);
 });
 
-$(document).on('click',domElements.allReplays,function(e){
+ $(document).on('click',domElements.allReplays,function(e){
     var ele=$(this);
     var parentLi=$(ele).parents('li');
     var request =showChildComments(getParentId($(parentLi)));
@@ -282,7 +286,7 @@ $(document).on('click',domElements.allReplays,function(e){
   });
 
 });
-$(document).on('click',domElements.hideAllReplay,function(e){
+ $(document).on('click',domElements.hideAllReplay,function(e){
     $(this).hide();
     $(this).prev('span').show();
     var parentLi=$(this).parents('li');
@@ -291,3 +295,17 @@ $(document).on('click',domElements.hideAllReplay,function(e){
 
 
 })();
+
+/*function postMessage()
+{
+   if($(domElements.messageTextBox).val()!=''){           
+       var request =sendMsg(null,$(domElements.messageTextBox).val(),pageUrl,fingerprint);
+       ajaxSuccessComment(request);
+   }       
+   else if($(selectedElement).parent('.comment_footer').find('.user-replay').val()!=''){
+    var parentId=getParentId($(selectedElement).parents('li'));
+    var request =sendMsg(parentId,$(selectedElement).parent('.comment_footer').find('.user-replay').val(),pageUrl,fingerprint);
+    ajaxSuccessReplay(request,$(selectedElement).parent('.comment_footer').find('.user-replay'))
+}
+
+}*/
