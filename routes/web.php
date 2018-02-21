@@ -14,7 +14,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::get('/docs', function () {
-     echo ('<script  src="http://ec2-54-252-171-131.ap-southeast-2.compute.amazonaws.com/js/bridget_maybe.js" type="text/javascript"></script><div id="example-widget-container"></div>');
+    return view('docs');
 });
 Route::get('fire/{message}', function ($message) {    
 	event(new App\Events\EventName($message,'test-channel1'));
