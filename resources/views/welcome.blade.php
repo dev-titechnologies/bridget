@@ -75,7 +75,7 @@
                 </div>
 
                 <div class="links">
-                    <a href="/docs">Documentation</a>
+                    <a href="docs">Documentation</a>
                 </div>
             </div>
         </div>
