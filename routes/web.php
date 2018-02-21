@@ -13,7 +13,9 @@
 Route::get('/', function () {
     return view('welcome');
 });
-
+Route::get('/docs', function () {
+    return view('docs');
+});
 Route::get('fire/{message}', function ($message) {    
 	event(new App\Events\EventName($message,'test-channel1'));
 	return "event fired";
