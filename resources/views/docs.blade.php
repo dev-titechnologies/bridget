@@ -9,9 +9,9 @@
                  
 
                 <code>
-
-                <div id="bridget_container"></div>
-                <script src="http://ec2-54-252-171-131.ap-southeast-2.compute.amazonaws.com/js/bridget_maybe.js"></script>
+                {{html_entity_decode('<div id="bridget_container"></div>
+                <script src="http://ec2-54-252-171-131.ap-southeast-2.compute.amazonaws.com/js/bridget_maybe.js"></script>''')}}
+                
 
                 <code>
 
