@@ -14,3 +14,4 @@
 	document.getElementById('bridget_container').style.position="fixed";
 	document.getElementById('bridget_container').style.bottom="0";
 	document.getElementById('bridget_container').style.right="0";
+	document.getElementById("bridget_container").style.zIndex = "10000";
