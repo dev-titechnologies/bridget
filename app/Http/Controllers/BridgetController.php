@@ -72,17 +72,11 @@ class BridgetController extends Controller
 
 	public function updateUserName(Request $request)
 	{
-		$commentId=$request->input('_id');
-		$userName=$request->input('username');
-		$url=$request->input('pageUrl');
-		$channel=BridgetUrl::getId($url);
-		if(BridgetComments::updateCommentUserByPk($commentId,$userName))
-		{
-			$data=array(
-				'username'=>$userName,
-				'commentId'=>$commentId
-				);
-			event(new \App\Events\UpdateUserName($data,$channel->_id));
+		
+		$username=$request->input('username');
+		$browserFingerPrint=Session::get('fingerPrint');
+		if(BridgetComments::updateCommentByFingerPrint($browserFingerPrint,$username))
+		{			
 			return response()->json(['success'=>true]);
 		}else{
 			return response()->json(['success'=>false]);

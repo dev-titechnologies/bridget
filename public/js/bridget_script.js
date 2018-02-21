@@ -1,5 +1,5 @@
 var selectedElement=null;
-var anonymousCommentId=null;
+var anonymousCommentId=null;      
 var domElements=(function(){
 
     return {
@@ -85,8 +85,8 @@ function ajaxSuccessComment(request)
     });
 
     request.fail(function(jqXHR, textStatus) {
-     alert( "Request failed: " + textStatus );
- });
+       alert( "Request failed: " + textStatus );
+   });
 }
 
 function displayNewMessage(data)
@@ -104,7 +104,7 @@ function displayNewMessage(data)
 
 function displayNewName(data)
 {
-   $('#commentuser-'+data.commentId).html(data.username); 
+ $('#commentuser-'+data.commentId).html(data.username); 
 }
 
 function getUserName()
@@ -158,28 +158,26 @@ function showChildComments(parentId)
     });
 }
 
-function updateUserName(id,userName)
+function updateUserName(username)
 {
   return $.ajax({
     url: baseUrl+'/update-username',
     type: "POST",
     data: {
         '_token': CSRF_TOKEN,
-        '_id':id,
-        'username':userName,
-        'pageUrl':pageUrl
+        'username':username
     },
     dataType: "json",
     beforeSend:function(){
-     $('#comment-box').attr('disabled',true); 
-     $('.user-replay').attr('disabled',true);
- }
+       $('#comment-box').attr('disabled',true); 
+       $('.user-replay').attr('disabled',true);
+   }
 });
 }
 
 function getParentId(ele)
 {
-   return $(ele).attr('id').split('-')[1];
+ return $(ele).attr('id').split('-')[1];
 }
 
 (function(){
@@ -191,10 +189,8 @@ function getParentId(ele)
 
     $(document).on('keypress',domElements.userNameField,function(e){
         var keycode = (e.keyCode ? e.keyCode : e.which);
-        if(keycode == '13' && $(this).val()!=''){
-            if(anonymousCommentId!=''){
-                updateUserName(anonymousCommentId,$(this).val());
-            }
+        if(keycode == '13' && $(this).val()!=''){            
+            updateUserName($(this).val());
             localStorage.setItem('bridget-username',$(this).val());            
             $('.bot-container').hide();
             $('#comment-box').attr('disabled',false); 
@@ -225,9 +221,9 @@ function getParentId(ele)
     $(document).on('keypress',domElements.userReplayInput,function(e){    
         var keycode = (e.keyCode ? e.keyCode : e.which);
         if(keycode == '13'){
-           var $input=$(this);  
+         var $input=$(this);  
 
-           if(!$input.val()){
+         if(!$input.val()){
             return;
         }
 
@@ -245,7 +241,7 @@ function getParentId(ele)
 
     function ajaxSuccessReplay(request,$input)
     {
-     request.done(function(response) {
+       request.done(function(response) {
         anonymousCommentId=response._id;
         $input.parents('.comment_footer').find(domElements.allReplays).trigger("click");
         $input.val('');
@@ -253,23 +249,21 @@ function getParentId(ele)
         getUserName();
     });
 
-     request.fail(function(jqXHR, textStatus) {
-      alert( "Request failed: " + textStatus );
-  }); 
- }
+       request.fail(function(jqXHR, textStatus) {
+          alert( "Request failed: " + textStatus );
+      }); 
+   }
 
 
- $(document).on('click',domElements.anonymousPost,function(e){
+   $(document).on('click',domElements.anonymousPost,function(e){
     localStorage.setItem('bridget-username','Anonymous');
-    if(anonymousCommentId!=''){
-        updateUserName(anonymousCommentId,'Anonymous');
-    }
+    updateUserName('Anonymous');
     $('.bot-container').hide();
     $('#comment-box').attr('disabled',false); 
     $('.user-replay').attr('disabled',false);
 });
 
- $(document).on('click',domElements.allReplays,function(e){
+   $(document).on('click',domElements.allReplays,function(e){
     var ele=$(this);
     var parentLi=$(ele).parents('li');
     var request =showChildComments(getParentId($(parentLi)));
@@ -286,7 +280,7 @@ function getParentId(ele)
   });
 
 });
- $(document).on('click',domElements.hideAllReplay,function(e){
+   $(document).on('click',domElements.hideAllReplay,function(e){
     $(this).hide();
     $(this).prev('span').show();
     var parentLi=$(this).parents('li');
