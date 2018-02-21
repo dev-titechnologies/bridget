@@ -18,15 +18,20 @@ use App\BridgetComments;
 
 		</div>
 		<ul class="messages">
+			@if(!count($parentComments))
+			<li class="no-comments"><b>No comments yet.Be the first to review this product</b></li>	
+			@endif
 			@foreach($parentComments as $parentComment)
 			@include('bridget.comment',['comment' => $parentComment])			
 			@endforeach	
 			<span id="new-message"></span>	
 		</ul>
+		<div class="bot-response"></div>
 
+		
 
 		<div class="bot-container">
-			<div class="other bot">
+			<div class="other bot other-bot">
 				My name’s Bridgit, what can I call you?
 			</div>
 			<div class="name_input">

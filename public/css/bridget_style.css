@@ -24,9 +24,10 @@ body {
   transition: all 250ms ease-out;
   border-radius: 50%;
   opacity: 0;
-  background: -moz-linear-gradient(-45deg, rgb(10, 189, 216) 0, rgb(9, 181, 207) 25%, #18B0C9 50%, #18B0C9 75%, #18B0C9 100%);
+  background-color: #fff;
+  /*background: -moz-linear-gradient(-45deg, rgb(10, 189, 216) 0, rgb(9, 181, 207) 25%, #18B0C9 50%, #18B0C9 75%, #18B0C9 100%);
   background: -webkit-linear-gradient(-45deg, rgb(6, 200, 230) 0, rgb(8, 159, 182) 25%, #18B0C9 50%, #18B0C9 75%, #18B0C9 100%);
-  background-repeat: no-repeat;
+ */ background-repeat: no-repeat;
   background-attachment: fixed;
 }
 .floating-chat.enter:hover {
@@ -37,6 +38,9 @@ body {
   transform: translateY(0);
   opacity: 0.6;
   box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.12), 0px 1px 2px rgba(0, 0, 0, 0.14);
+  background: -moz-linear-gradient(-45deg, rgb(10, 189, 216) 0, rgb(9, 181, 207) 25%, #18B0C9 50%, #18B0C9 75%, #18B0C9 100%);
+  background: -webkit-line;
+      background: -webkit-linear-gradient(-45deg, rgb(6, 200, 230) 0, rgb(8, 159, 182) 25%, #18B0C9 50%, #18B0C9 75%, #18B0C9 100%);
 }
 .floating-chat.expand {
   width: 350px;
@@ -89,11 +93,13 @@ body {
   height: auto;
 }
 .floating-chat .chat .header {
+
   flex-shrink: 0;
   height: 50px;
   padding-bottom: 10px;
   display: flex;
-  background: transparent;
+background: -moz-linear-gradient(-45deg, rgb(10, 189, 216) 0, rgb(9, 181, 207) 25%, #18B0C9 50%, #18B0C9 75%, #18B0C9 100%);
+  background: -webkit-linear-gradient(-45deg, rgb(6, 200, 230) 0, rgb(8, 159, 182) 25%, #18B0C9 50%, #18B0C9 75%, #18B0C9 100%);
 }
 .floating-chat .chat .header .title {
   flex-grow: 1;
@@ -306,7 +312,7 @@ body {
   border-radius: 3px;
 }
 .bot{
-  background-color: rgba(25, 147, 147, 0.2); 
+  background-color: rgba(25, 147, 147, 0.2);
   margin-top: 21px;
   /*display: none !important;*/
 }
@@ -408,4 +414,14 @@ body {
     width: 0;
     height: 0;
     border-top: 10px solid rgba(25, 147, 147, 0.2);
+}
+.no-comments{
+margin: 40% 2%;
+}
+
+
+.bot-response{
+  display: none;
+      background: #fff;
+    padding-bottom: 25px;
 }

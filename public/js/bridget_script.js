@@ -91,6 +91,7 @@ function ajaxSuccessComment(request)
 
 function displayNewMessage(data)
 {
+    $('.no-comments').hide();
     $(domElements.messagesContainer).append(data.message); 
     if(fingerprint!=data.commentFingerPrint){
         $('#commentuser-'+data.commentId).html(data.username);
@@ -191,10 +192,14 @@ function getParentId(ele)
         var keycode = (e.keyCode ? e.keyCode : e.which);
         if(keycode == '13' && $(this).val()!=''){            
             updateUserName($(this).val());
-            localStorage.setItem('bridget-username',$(this).val());            
+            localStorage.setItem('bridget-username',$(this).val());   
+            $('.bot-response').html('<div class="other bot other-bot bot-response-container">Thank you'+' '+$(this).val()+'</div>');      
             $('.bot-container').hide();
+            $('.bot-response').show();
+            setTimeout(function(){ $('.bot-response').hide(); }, 3000);
             $('#comment-box').attr('disabled',false); 
             $('.user-replay').attr('disabled',false);
+
         }   
     });
 
