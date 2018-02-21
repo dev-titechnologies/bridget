@@ -14,7 +14,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::get('/docs', function () {
-    return view('docs');
+     dd('<script  src="http://localhost/bridget2/script.js" type="text/javascript"></script><div id="example-widget-container"></div>');
 });
 Route::get('fire/{message}', function ($message) {    
 	event(new App\Events\EventName($message,'test-channel1'));
