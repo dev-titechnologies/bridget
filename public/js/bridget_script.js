@@ -1,13 +1,13 @@
 var selectedElement=null;
-var anonymousCommentId=null;      
-var domElements=(function(){
+var anonymousCommentId=null;
+var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
 
-    return {
-        'replayLink':'.replay-comment',
+var domElements=(function(){
+    return {       
         'replayBtn':'.replay-btn',
         'chatContainer':'.floating-chat',
         'messagesContainer':'.messages',
-        'allReplays':'.see-all-replay',
+        'seeAllReplays':'.see-all-replay',
         'childCommentContainer':'.child_comment_container',
         'hideAllReplay':'.hide-all-replay',
         'commentFooter':'.comment_footer',
@@ -16,16 +16,34 @@ var domElements=(function(){
         'sendMessageBtn':'#sendMessage',
         'messageTextBox':'.comment-box',
         'responseMessage':'#new-message',
-        'userComments':'.user-comments',
-        'anonymousPost':'.anonymous-post',
-        'userNameField':'.name_field'
+        'anonymousPostBtn':'.anonymous-post',
+        'userNameField':'.name_field',
+        'botContainer':'.bot-container'
     }
 
 })();
+
+var storage=(function(){
+    getItem=function(item){
+       return localStorage.getItem(item);
+    }
+    setItem=function(item,value){
+        localStorage.setItem(item,$(this).val()); 
+        return true;  
+    }
+    removeItem=function(){
+
+    }
+   return {
+        getItem:getItem,
+        setItem:setItem,
+        removeItem:removeItem
+   }
+
+})();
+
 $(".bot").fadeIn( "slow" );
-$(".name_field").focus();
 var element = $(domElements.chatContainer);
-var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
 
 setTimeout(function() {
     element.addClass('enter');
@@ -85,8 +103,8 @@ function ajaxSuccessComment(request)
     });
 
     request.fail(function(jqXHR, textStatus) {
-       alert( "Request failed: " + textStatus );
-   });
+     alert( "Request failed: " + textStatus );
+ });
 }
 
 function displayNewMessage(data)
@@ -105,7 +123,7 @@ function displayNewMessage(data)
 
 function displayNewName(data)
 {
- $('#commentuser-'+data.commentId).html(data.username); 
+   $('#commentuser-'+data.commentId).html(data.username); 
 }
 
 function getUserName()
@@ -115,7 +133,8 @@ function getUserName()
 
     if(!bridgetUsername){
 
-        $('.bot-container').show();
+        $(domElements.botContainer).show();
+        $(domElements.userNameField).focus();
         return;
     }
     return bridgetUsername;
@@ -170,23 +189,18 @@ function updateUserName(username)
     },
     dataType: "json",
     beforeSend:function(){
-       $('#comment-box').attr('disabled',true); 
-       $('.user-replay').attr('disabled',true);
-   }
+     $('#comment-box').attr('disabled',true); 
+     $('.user-replay').attr('disabled',true);
+ }
 });
 }
 
 function getParentId(ele)
 {
- return $(ele).attr('id').split('-')[1];
+   return $(ele).attr('id').split('-')[1];
 }
 
 (function(){
-
-
-    $(domElements.replayLink).on('click',function(e){
-        $(this).next('div').show();
-    })
 
     $(document).on('keypress',domElements.userNameField,function(e){
         var keycode = (e.keyCode ? e.keyCode : e.which);
@@ -194,7 +208,7 @@ function getParentId(ele)
             updateUserName($(this).val());
             localStorage.setItem('bridget-username',$(this).val());   
             $('.bot-response').html('<div class="other bot other-bot bot-response-container">Thank you'+' '+$(this).val()+'</div>');      
-            $('.bot-container').hide();
+            $(domElements.botContainer).hide();
             $('.bot-response').show();
             setTimeout(function(){ $('.bot-response').hide(); }, 3000);
             $('#comment-box').attr('disabled',false); 
@@ -226,9 +240,9 @@ function getParentId(ele)
     $(document).on('keypress',domElements.userReplayInput,function(e){    
         var keycode = (e.keyCode ? e.keyCode : e.which);
         if(keycode == '13'){
-         var $input=$(this);  
+           var $input=$(this);  
 
-         if(!$input.val()){
+           if(!$input.val()){
             return;
         }
 
@@ -246,29 +260,29 @@ function getParentId(ele)
 
     function ajaxSuccessReplay(request,$input)
     {
-       request.done(function(response) {
+     request.done(function(response) {
         anonymousCommentId=response._id;
-        $input.parents('.comment_footer').find(domElements.allReplays).trigger("click");
+        $input.parents('.comment_footer').find(domElements.seeAllReplays).trigger("click");
         $input.val('');
         $input.parent('.reply_input').hide();
         getUserName();
     });
 
-       request.fail(function(jqXHR, textStatus) {
-          alert( "Request failed: " + textStatus );
-      }); 
-   }
+     request.fail(function(jqXHR, textStatus) {
+      alert( "Request failed: " + textStatus );
+  }); 
+ }
 
 
-   $(document).on('click',domElements.anonymousPost,function(e){
+ $(document).on('click',domElements.anonymousPostBtn,function(e){
     localStorage.setItem('bridget-username','Anonymous');
     updateUserName('Anonymous');
-    $('.bot-container').hide();
+    $(domElements.botContainer).hide();
     $('#comment-box').attr('disabled',false); 
     $('.user-replay').attr('disabled',false);
 });
 
-   $(document).on('click',domElements.allReplays,function(e){
+ $(document).on('click',domElements.seeAllReplays,function(e){
     var ele=$(this);
     var parentLi=$(ele).parents('li');
     var request =showChildComments(getParentId($(parentLi)));
@@ -285,7 +299,7 @@ function getParentId(ele)
   });
 
 });
-   $(document).on('click',domElements.hideAllReplay,function(e){
+ $(document).on('click',domElements.hideAllReplay,function(e){
     $(this).hide();
     $(this).prev('span').show();
     var parentLi=$(this).parents('li');

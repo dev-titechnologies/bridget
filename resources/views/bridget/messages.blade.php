@@ -40,7 +40,7 @@ use App\BridgetComments;
 						<input class="name_field" type="text" placeholder='Enter your name here'>
 					</div> 
 					<div>
-						<span class="sub_text_time anonymous link pull-left anonymous-post">Or Post as anonymous.</span>
+						<span class="sub_text_time anonymous link pull-left anonymous-post-btn">Or Post as anonymous.</span>
 						<span class="sub_text_time pull-right m-minus ">Press enter to send.</span>
 					</div> 
 				</div> 
@@ -53,9 +53,9 @@ use App\BridgetComments;
 		</div>
 	</div>
 </div>
-<script type="text/javascript" src="http://ec2-54-252-171-131.ap-southeast-2.compute.amazonaws.com:3000/socket.io/socket.io.js"></script>
+<script type="text/javascript" src="<?php echo env('SOCKET_URL');?>/socket.io/socket.io.js"></script>
 <script> 
-	var socket = io('http://ec2-54-252-171-131.ap-southeast-2.compute.amazonaws.com:3000');
+	var socket = io('<?php echo env('SOCKET_URL');?>');
 	var channel = "<?php echo $channelId; ?>:App\\Events\\SendMessage";
 	socket.on(channel, function(data){
 
@@ -74,4 +74,3 @@ use App\BridgetComments;
 </script>
 <script type="text/javascript" src="{{ URL::asset('js/bridget_script.js') }}"></script>
 @stop
-
