@@ -53,7 +53,7 @@ use App\BridgetComments;
 		</div>
 	</div>
 </div>
-<script type="text/javascript" src="{{ URL::asset('js/socket.io.js') }}"></script>
+<script type="text/javascript" src="http://ec2-54-252-171-131.ap-southeast-2.compute.amazonaws.com:3000/socket.io/socket.io.js"></script>
 <script> 
 	var socket = io('http://ec2-54-252-171-131.ap-southeast-2.compute.amazonaws.com:3000');
 	var channel = "<?php echo $channelId; ?>:App\\Events\\SendMessage";
