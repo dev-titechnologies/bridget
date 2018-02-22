@@ -5,18 +5,8 @@ use App\BridgetComments;
 @section('content')
 <div id="test-123"></div>
 
-<div class="floating-chat enter">
-	<i class="fa fa-comments" aria-hidden="true"></i>
-	<div class="chat">
-		<div class="header">
-			<span class="title">
-				What do you think?
-			</span>
-			<button  class="close">
-				<i class="fa fa-times" aria-hidden="true"></i>
-			</button>
-
-		</div>
+<div class="floating-chat2">
+ 
 		<ul class="messages">
 			@if(!count($parentComments))
 			<li class="no-comments"><b>No comments yet.Be the first to review this product</b></li>	
@@ -51,7 +41,7 @@ use App\BridgetComments;
 			<input class="comment-box">
 			<button id="sendMessage">Add </button>
 		</div>
-	</div>
+<!-- 	</div> -->
 </div>
 <script type="text/javascript" src="<?php echo env('SOCKET_URL');?>/socket.io/socket.io.js"></script>
 <script> 

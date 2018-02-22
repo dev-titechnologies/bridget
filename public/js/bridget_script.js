@@ -25,20 +25,20 @@ var domElements=(function(){
 
 var storage=(function(){
     getItem=function(item){
-       return localStorage.getItem(item);
-    }
-    setItem=function(item,value){
-        localStorage.setItem(item,$(this).val()); 
-        return true;  
-    }
-    removeItem=function(){
+     return localStorage.getItem(item);
+ }
+ setItem=function(item,value){
+    localStorage.setItem(item,$(this).val()); 
+    return true;  
+}
+removeItem=function(){
 
-    }
-   return {
-        getItem:getItem,
-        setItem:setItem,
-        removeItem:removeItem
-   }
+}
+return {
+    getItem:getItem,
+    setItem:setItem,
+    removeItem:removeItem
+}
 
 })();
 
@@ -52,6 +52,7 @@ setTimeout(function() {
 element.click(openElement);
 
 function openElement() {
+
     var messages = element.find('.messages');
     var textInput = element.find(domElements.messageTextBox);
     element.find('>i').hide();
@@ -66,6 +67,7 @@ function openElement() {
 }
 
 function closeElement() {
+
     element.find('.chat').removeClass('enter').hide();
     element.find('>i').show();
     element.removeClass('expand');
@@ -103,8 +105,8 @@ function ajaxSuccessComment(request)
     });
 
     request.fail(function(jqXHR, textStatus) {
-     alert( "Request failed: " + textStatus );
- });
+       alert( "Request failed: " + textStatus );
+   });
 }
 
 function displayNewMessage(data)
@@ -123,7 +125,7 @@ function displayNewMessage(data)
 
 function displayNewName(data)
 {
-   $('#commentuser-'+data.commentId).html(data.username); 
+ $('#commentuser-'+data.commentId).html(data.username); 
 }
 
 function getUserName()
@@ -189,18 +191,24 @@ function updateUserName(username)
     },
     dataType: "json",
     beforeSend:function(){
-     $('#comment-box').attr('disabled',true); 
-     $('.user-replay').attr('disabled',true);
- }
+       $('#comment-box').attr('disabled',true); 
+       $('.user-replay').attr('disabled',true);
+   }
 });
 }
 
 function getParentId(ele)
 {
-   return $(ele).attr('id').split('-')[1];
+ return $(ele).attr('id').split('-')[1];
 }
 
 (function(){
+
+    $(document).on('click',domElements.sendMessageBtn,function(){
+       sendNewMessage();
+   })
+
+   
 
     $(document).on('keypress',domElements.userNameField,function(e){
         var keycode = (e.keyCode ? e.keyCode : e.which);
@@ -240,9 +248,9 @@ function getParentId(ele)
     $(document).on('keypress',domElements.userReplayInput,function(e){    
         var keycode = (e.keyCode ? e.keyCode : e.which);
         if(keycode == '13'){
-           var $input=$(this);  
+         var $input=$(this);  
 
-           if(!$input.val()){
+         if(!$input.val()){
             return;
         }
 
@@ -260,7 +268,7 @@ function getParentId(ele)
 
     function ajaxSuccessReplay(request,$input)
     {
-     request.done(function(response) {
+       request.done(function(response) {
         anonymousCommentId=response._id;
         $input.parents('.comment_footer').find(domElements.seeAllReplays).trigger("click");
         $input.val('');
@@ -268,13 +276,13 @@ function getParentId(ele)
         getUserName();
     });
 
-     request.fail(function(jqXHR, textStatus) {
-      alert( "Request failed: " + textStatus );
-  }); 
- }
+       request.fail(function(jqXHR, textStatus) {
+          alert( "Request failed: " + textStatus );
+      }); 
+   }
 
 
- $(document).on('click',domElements.anonymousPostBtn,function(e){
+   $(document).on('click',domElements.anonymousPostBtn,function(e){
     localStorage.setItem('bridget-username','Anonymous');
     updateUserName('Anonymous');
     $(domElements.botContainer).hide();
@@ -282,7 +290,7 @@ function getParentId(ele)
     $('.user-replay').attr('disabled',false);
 });
 
- $(document).on('click',domElements.seeAllReplays,function(e){
+   $(document).on('click',domElements.seeAllReplays,function(e){
     var ele=$(this);
     var parentLi=$(ele).parents('li');
     var request =showChildComments(getParentId($(parentLi)));
@@ -299,7 +307,7 @@ function getParentId(ele)
   });
 
 });
- $(document).on('click',domElements.hideAllReplay,function(e){
+   $(document).on('click',domElements.hideAllReplay,function(e){
     $(this).hide();
     $(this).prev('span').show();
     var parentLi=$(this).parents('li');

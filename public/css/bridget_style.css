@@ -7,6 +7,7 @@
 body {
   background: transparent;
   font: 12px/16px 'Noto Sans', sans-serif;
+  margin:0;
 }
 
 .floating-chat {
@@ -54,7 +55,7 @@ body {
   outline: 0;
   /* box-shadow: 0 0 3pt 2pt rgba(14, 200, 121, 0.3); */
 }
-.floating-chat button {
+#sendMessage {
   background: #2fb1c9;
   border: 0;
   color: #ffffff;
@@ -72,7 +73,7 @@ body {
   cursor: pointer;
   margin: 13px 10px;
 }
-.floating-chat .chat {
+.floating-chat {
   display: flex;
   flex-direction: column;
   position: absolute;
@@ -92,18 +93,18 @@ body {
   border-radius: 0;
   /* margin: 10px; */
   width: auto;
-  height: auto;
+  height: auto;`
 }
-.floating-chat .chat .header {
+.floating-chat .header {
 
   flex-shrink: 0;
   height: 50px;
-  padding-bottom: 10px;
+  /*padding-bottom: 10px;*/
   display: flex;
 background: -moz-linear-gradient(-45deg, rgb(10, 189, 216) 0, rgb(9, 181, 207) 25%, #18B0C9 50%, #18B0C9 75%, #18B0C9 100%);
   background: -webkit-linear-gradient(-45deg, rgb(6, 200, 230) 0, rgb(8, 159, 182) 25%, #18B0C9 50%, #18B0C9 75%, #18B0C9 100%);
 }
-.floating-chat .chat .header .title {
+.floating-chat .header .title {
   flex-grow: 1;
   flex-shrink: 1;
   padding: 0 5px;
@@ -113,10 +114,10 @@ background: -moz-linear-gradient(-45deg, rgb(10, 189, 216) 0, rgb(9, 181, 207) 2
   line-height: 3;
   margin-left: 16px;
 }
-.floating-chat .chat .header button {
+.header button {
   flex-shrink: 0;
 }
-.floating-chat .chat .messages {
+.messages {
   padding: 10px;
   margin: 0;
   list-style: none;
@@ -125,19 +126,20 @@ background: -moz-linear-gradient(-45deg, rgb(10, 189, 216) 0, rgb(9, 181, 207) 2
   flex-grow: 1;
   /* border-radius: 4px; */
   background: #fff;
+  height:285px;
 }
-.floating-chat .chat .messages::-webkit-scrollbar {
+.messages::-webkit-scrollbar {
   width: 5px;
 }
-.floating-chat .chat .messages::-webkit-scrollbar-track {
+.messages::-webkit-scrollbar-track {
   border-radius: 5px;
   background-color: rgba(25, 147, 147, 0.1);
 }
-.floating-chat .chat .messages::-webkit-scrollbar-thumb {
+.messages::-webkit-scrollbar-thumb {
   border-radius: 5px;
   background-color: rgba(25, 147, 147, 0.2);
 }
-.floating-chat .chat .messages li {
+ .messages li {
   position: relative;
   clear: both;
   display: inline-block;
@@ -151,7 +153,7 @@ background: -moz-linear-gradient(-45deg, rgb(10, 189, 216) 0, rgb(9, 181, 207) 2
   color:#1b1b1b;
   /* border-bottom: 1px solid #e8e2e2; */
 }
-.floating-chat .chat .messages li:before {
+.messages li:before {
   position: absolute;
   top: 0;
   /* width: 25px;
@@ -160,7 +162,7 @@ background: -moz-linear-gradient(-45deg, rgb(10, 189, 216) 0, rgb(9, 181, 207) 2
   content: '';
   background-size: cover;
 }
-.floating-chat .chat .messages li:after {
+.messages li:after {
   position: absolute;
   top: 10px;
   content: '';
@@ -168,7 +170,7 @@ background: -moz-linear-gradient(-45deg, rgb(10, 189, 216) 0, rgb(9, 181, 207) 2
   height: 0;
   border-top: 10px solid rgba(25, 147, 147, 0.2);
 }
-.floating-chat .chat .messages li.other {
+.messages li.other {
   animation: show-chat-odd 0.15s 1 ease-in;
   -moz-animation: show-chat-odd 0.15s 1 ease-in;
   -webkit-animation: show-chat-odd 0.15s 1 ease-in;
@@ -176,14 +178,14 @@ background: -moz-linear-gradient(-45deg, rgb(10, 189, 216) 0, rgb(9, 181, 207) 2
   margin-right: 45px;
   color: #2e3131;
 }
-.floating-chat .chat .messages li.other:before {
+.messages li.other:before {
   right: -45px;
 }
-.floating-chat .chat .messages li.other:after {
+.messages li.other:after {
   border-right: 10px solid transparent;
   right: -10px;
 }
-.floating-chat .chat .messages li.self {
+.floating-chat .messages li.self {
   animation: show-chat-even 0.15s 1 ease-in;
   -moz-animation: show-chat-even 0.15s 1 ease-in;
   -webkit-animation: show-chat-even 0.15s 1 ease-in;
@@ -191,22 +193,23 @@ background: -moz-linear-gradient(-45deg, rgb(10, 189, 216) 0, rgb(9, 181, 207) 2
   margin-left: 45px;
   color: #0EC879;
 }
-.floating-chat .chat .messages li.self:before {
+.messages li.self:before {
   left: -45px;
   background-image: url(https://github.com/ortichon.png);
 }
-.floating-chat .chat .messages li.self:after {
+.messages li.self:after {
   border-left: 10px solid transparent;
   left: -10px;
 }
-.floating-chat .chat .footer {
+.footer {
   flex-shrink: 0;
   display: flex;
   padding: 10px;
   max-height: 90px;
   background: #E8EEF2;
+  width: 100%;
 }
-.floating-chat .chat .footer .text-box {
+.footer .text-box {
   border-radius: 3px;
   background:#fff;
   min-height: 100%;
@@ -216,14 +219,14 @@ background: -moz-linear-gradient(-45deg, rgb(10, 189, 216) 0, rgb(9, 181, 207) 2
   overflow-y: auto;
   padding: 2px 5px;
 }
-.floating-chat .chat .footer .text-box::-webkit-scrollbar {
+.footer .text-box::-webkit-scrollbar {
   width: 5px;
 }
-.floating-chat .chat .footer .text-box::-webkit-scrollbar-track {
+.footer .text-box::-webkit-scrollbar-track {
   border-radius: 5px;
   background-color: rgba(25, 147, 147, 0.1);
 }
-.floating-chat .chat .footer .text-box::-webkit-scrollbar-thumb {
+.footer .text-box::-webkit-scrollbar-thumb {
   border-radius: 5px;
   background-color: rgba(25, 147, 147, 0.2);
 }
@@ -384,7 +387,7 @@ background: -moz-linear-gradient(-45deg, rgb(10, 189, 216) 0, rgb(9, 181, 207) 2
     clear: both;
     display: inline-block;
     padding: 10px;
-    /* margin: 0 0 10px 0; */
+     margin: 0 0 10px 0; 
     font: 12px/16px 'Noto Sans', sans-serif;
     /* border-radius: 10px; */
     /* background-color: rgba(25, 147, 147, 0.2); */
@@ -428,3 +431,4 @@ margin: 40% 2%;
       background: #fff;
     padding-bottom: 25px;
 }
+
