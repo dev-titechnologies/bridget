@@ -41,9 +41,10 @@ class BridgetController extends Controller
 		$browserFingerPrint=Session::get('fingerPrint');
 		$userName=$request->input('username');
 		$comment=BridgetComments::addMessage($comment,$parentId,$url,$browserFingerPrint,$userName);
-		
+		$childCount=false;
 		if($comment){
-			if($parentId){
+			if($parentId){				
+				$childCount=BridgetComments::numberOfReply($parentId);
 				$commentHtml = view("bridget.childComment",compact('comment'))->render();
 			}else{
 				$commentHtml = view("bridget.comment",compact('comment'))->render();
@@ -56,7 +57,7 @@ class BridgetController extends Controller
 				event(new \App\Events\SendMessage($commentData,$channel->_id));
 			}
 
-			return response()->json(['success'=>true,'message' => $commentHtml,'_id'=>$comment->_id]);
+			return response()->json(['success'=>true,'message' => $commentHtml,'_id'=>$comment->_id,'childCount'=>$childCount]);
 		}else{
 			return response()->json(['success'=>false]);
 		}		

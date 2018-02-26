@@ -8,7 +8,7 @@ class BridgetComments extends Eloquent
 {
 	protected $collection = 'bridget_comments';
 
-	const COMMENTLIMIT=10;
+	const COMMENTLIMIT=15;
 
 	public static function getParents($url,$startFrom,$limit=self::COMMENTLIMIT)
 	{
@@ -16,7 +16,7 @@ class BridgetComments extends Eloquent
 		->where('url','=',$url)
 		->skip($startFrom*$limit)
 		->orderBy('created_at','desc')
-		/*->take($limit)*/
+		->take($limit)
 		->get();
 	}
 
@@ -53,5 +53,17 @@ class BridgetComments extends Eloquent
 	{
 		return self::where('browser_fingerprint','=',$fingerPrint)
 		->update(['username' => $userName]);
+	}
+
+	public static function numberOfReply($parentId)
+	{
+		$count=self::getChildrensCount($parentId);
+		if($count==0){
+			return 'Add Reply';
+		}elseif($count==1){
+			return '1 Reply';
+		}else{
+			return $count.' Replies';
+		}
 	}
 }

@@ -1,9 +1,4 @@
- var assetPath ='http://bridget.com';
- // document.getElementById("bridget_container").classList.add("floating-chat");
-
-
-
-
+ var assetPath ='http://192.168.1.57/bridget_backend/public';
 
  function getScript(url){
  	var script=document.createElement('script');
@@ -88,23 +83,17 @@
        element.click(openElement);
 
 
-       function openElement() { 
+       function openElement() 
+       { 
+             
        	var messages = element.find('.messages');
        	var textInput = element.find(domElements.messageTextBox);
-       	element.find('>i').hide();
+       	/*element.find('>i').hide();*/
        	element.addClass('expand');
        	element.find('.chat').addClass('enter');
        	element.off('click', openElement);
        	element.find('.header button').click(closeElement);
-       	messages.scrollTop(messages.prop("scrollHeight"));
-
-
-
-
-
-
-
-
+       	/*messages.scrollTop(messages.prop("scrollHeight"));*/
 
        	/*FRAME*/
        	var iFrame = document.createElement("iframe");
@@ -115,40 +104,13 @@
        		var bridgetFingerprint = new Date().getTime() + Math.random();
        		localStorage.setItem("bridget-fingerprint", bridgetFingerprint);   
        	}
-       	iFrame.setAttribute("src", "http://bridget.com/bridget?bridget_url="+url+"&fingerPrint="+bridgetFingerprint);
+       	iFrame.setAttribute("src", assetPath+"/bridget?bridget_url="+url+"&fingerPrint="+bridgetFingerprint);
        	iFrame.setAttribute("id", "bridget_maybe");
        	iFrame.setAttribute("frameBorder", 0);
        	iFrame.style.width = "100%";
        	iFrame.style.height = "100%";
        	document.getElementById('iframe-container').appendChild(iFrame);
-	// document.getElementById('iframe_container').style.position="fixed";
-	// document.getElementById('iframe_container').style.bottom="0";
-	// document.getElementById('iframe_container').style.right="0";
-	// document.getElementById("iframe_container").style.zIndex = "10000";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-}
+       }
 
 function closeElement() {
 	
@@ -167,15 +129,5 @@ function closeElement() {
 
 });
 
- function showMsg() {
- 	$('#test').html('asdsa');
- }
 
-
-
- function myFunction(){
-
- 	document.getElementById("bridget_container").style.height = "500";
- 	document.getElementById("bridget_container").style.width = "600";
- }
  

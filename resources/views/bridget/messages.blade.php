@@ -3,46 +3,43 @@ use App\BridgetComments;
 ?>
 @extends('layouts.bridget')
 @section('content')
-<div id="test-123"></div>
 
-<div class="floating-chat2">
- 
-		<ul class="messages">
-			@if(!count($parentComments))
-			<li class="no-comments"><b>No comments yet.Be the first to review this product</b></li>	
-			@endif
-			@foreach($parentComments as $parentComment)
-			@include('bridget.comment',['comment' => $parentComment])			
-			@endforeach	
-			<span id="new-message"></span>	
-		</ul>
-		<div class="bot-response"></div>
+<section class="avenue-messenger">
+	<div class="chat">
+		<div class="messages">
+			<div class="messages-content">
+				@if(!count($parentComments))
+				<div class="no-comments"><b>No comments yet.Be the first to review this product</b></div>	
+				@endif
+				<div class="chat-content">
+				@foreach($parentComments as $parentComment)
+				@include('bridget.comment',['comment' => $parentComment])			
+				@endforeach
+				</div>
+				<div class="message bot">
+					<figure class="avatar">
+						<img src="img/bot.png">
+					</figure>
+					<div  class="bot-response">
+						My name is Bridgit, what can I call you?<br>
+						<input class="name_field" type="text" placeholder="Enter name...">
+						<div class="timestamp"></div>
+						<span class="cursor_pointer anonymous-post-btn">Or Post as anonymous</span>
+					</div>
+				</div>
 
+			</div> 
+
+		</div>
 		
-
-		<div class="bot-container">
-			<div class="other bot other-bot">
-				My name’s Bridgit, what can I call you?
-			</div>
-			<div class="name_input">
-				<div>
-					<div class="">
-						<input class="name_field" type="text" placeholder='Enter your name here'>
-					</div> 
-					<div>
-						<span class="sub_text_time anonymous link pull-left anonymous-post-btn">Or Post as anonymous.</span>
-						<span class="sub_text_time pull-right m-minus ">Press enter to send.</span>
-					</div> 
-				</div> 
-			</div>
+		<div class="message-box">
+			<textarea type="text" class="message-input comment-box" placeholder="Add a comment..."></textarea>
+			<button type="submit" class="message-submit" id="sendMessage">Send</button>
 		</div>
+	</div>
 
-		<div class="footer">
-			<input class="comment-box">
-			<button id="sendMessage">Add </button>
-		</div>
-<!-- 	</div> -->
-</div>
+</section>
+
 <script type="text/javascript" src="<?php echo env('SOCKET_URL');?>/socket.io/socket.io.js"></script>
 <script> 
 	var socket = io('<?php echo env('SOCKET_URL');?>');
