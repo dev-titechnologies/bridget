@@ -186,7 +186,8 @@ screen and (max-width: 450px) {
     background-color: #fff;
     background-repeat: no-repeat;
     background-attachment: fixed;
-}
+    z-index: 999999999;
+}    
 .fa-comments:before {
     content: "\f086";
 }

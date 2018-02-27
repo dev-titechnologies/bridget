@@ -33,7 +33,7 @@ use App\BridgetComments;
 		</div>
 		
 		<div class="message-box">
-			<textarea type="text" class="message-input comment-box" placeholder="Add a comment..."></textarea>
+			<input type="text" class="message-input comment-box" placeholder="Add a comment...">
 			<button type="submit" class="message-submit" id="sendMessage">Send</button>
 		</div>
 	</div>
