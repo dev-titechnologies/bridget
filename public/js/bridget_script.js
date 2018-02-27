@@ -104,6 +104,7 @@ function getUserName()
 
         $(domElements.botContainer).show();
         $(domElements.userNameField).focus();
+        updateScrollbar();
         return;
     }
     return bridgetUsername;
