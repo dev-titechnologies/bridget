@@ -1,5 +1,6 @@
 var selectedElement=null;
-var anonymousCommentId=null;
+var realTimeMsgCount=0;
+var pageNum=0;
 
 
 var domElements=(function(){
@@ -24,7 +25,8 @@ var domElements=(function(){
         'botContainer':'.bot',
         'botResponse':'.bot-response',
         'noComments':'.no-comments',
-        'childComments':'.child-comments'
+        'childComments':'.child-comments',
+        'loadPreviousComment':'.load-previous-comments'
     }
 
 })();
@@ -66,8 +68,7 @@ function sendNewMessage()
 function ajaxSuccessComment(request)
 {
     request.done(function(response){ 
-        reEnableTextBox(); 
-        anonymousCommentId=response._id;     
+        reEnableTextBox();     
         if(getUserName()){
             $(domElements.messageTextBox).focus();
         }
@@ -82,7 +83,7 @@ function ajaxSuccessComment(request)
 
 function displayNewMessage(data)
 {
-
+    realTimeMsgCount++;
     $(domElements.noComments).hide();
     $(domElements.chatContainer).append(data.message); 
     if(fingerprint!=data.commentFingerPrint){
@@ -179,7 +180,7 @@ function getParentId(ele)
 }
 
 function updateScrollbar() {
-
+    console.log('fired');
     $(domElements.messagesContainer).mCustomScrollbar("update").mCustomScrollbar('scrollTo', 'bottom', {
         scrollInertia: 10,
         timeout: 0
@@ -201,6 +202,23 @@ function reEnableTextBox()
 function getCsrfToken()
 {
     return $('meta[name="csrf-token"]').attr('content');
+}
+
+function loadPreviousComment(pageNum)
+{
+    return $.ajax({
+        url: baseUrl+'/bridget',
+        type: "GET",
+        data: {            
+            'page_num':pageNum,
+            'bridget_url':pageUrl,
+            'real_time_offset':realTimeMsgCount
+        },
+        dataType: "json",
+        beforeSend:function(){
+
+        }
+    });
 }
 
 (function(){
@@ -279,7 +297,7 @@ function getCsrfToken()
            $input.parent().parent().find('.see-all-replay').html(response.childCount);
            if(getUserName()){
             //
-            $(domElements.userReplayInput).focus();
+            $input.focus();
         }
 
     });
@@ -303,10 +321,14 @@ function getCsrfToken()
     var request =showChildComments(getParentId($(parentDiv)));
 
     request.done(function(response) {
+        if($(parentDiv).is(':last-child')){
+            updateScrollbar();
+        }
         $(parentDiv).find(domElements.childCommentContainer).html(response.view);
         $(parentDiv).find(domElements.childCommentContainer).show();
         $(ele).hide();
         $(ele).next('div').show();
+        $(parentDiv).find(domElements.userReplayInput).focus();
     });
 
     request.fail(function(jqXHR, textStatus) {
@@ -320,6 +342,23 @@ function getCsrfToken()
     var parentDiv=$(this).parent().parent();;
     $(parentDiv).find(domElements.childCommentContainer).hide();
 });
+
+   $(document).on('click',domElements.loadPreviousComment,function(e){  
+    e.preventDefault();
+    pageNum++;
+    loadPreviousComment(pageNum).done(function(response){ 
+        if(response.success){
+
+         $(domElements.chatContainer).prepend(response.comments); 
+         if(!response.showLoadMore){
+            $(domElements.loadPreviousComment).hide();            
+        }
+
+    }
+
+
+});
+})
 
 
 })();

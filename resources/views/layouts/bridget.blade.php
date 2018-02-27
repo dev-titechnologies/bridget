@@ -22,17 +22,14 @@
 
 <script type="text/javascript">
 	var csrfToken = $('[name="csrf-token"]').attr('content');
-
-	  setInterval(refreshToken, 1800000); // 1/2 hour 
-
-	  function refreshToken(){
-	  	
+	  setInterval(refreshToken, 1800000); // 1/2 hour
+	  function refreshToken()
+	  {	  	
 	  	$.get('refresh-csrf').done(function(data){
 	  		csrfToken = data;
 	  		$('[name="csrf-token"]').attr("content", csrfToken);
 	  	});
 	  }
-
 	</script>
 
 	</html>
