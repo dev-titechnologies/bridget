@@ -339,3 +339,7 @@
   overflow: visible;
   clip: auto
 }
+.logo_bridgit{
+  float: left;
+  margin: -5px 22px;
+}
