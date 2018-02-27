@@ -132,7 +132,7 @@ screen and (max-width: 450px) {
     border: 1px solid #fff;
   }
 
-  .bridget-menu .button {
+  .bridget-menu .button-bridgit {
     border-top-right-radius: 0;
   }
 }
@@ -200,7 +200,7 @@ screen and (max-width: 450px) {
 .bridget-bridget-chat-btn.active {
     display: block;
 }
-.bridget-menu .button {
+.bridget-menu .button-bridgit {
   font-size: 30px;
   z-index: 12;
   text-align: right;
@@ -221,7 +221,7 @@ screen and (max-width: 450px) {
   -moz-transition: .3s all ease-in-out;
 }
 
-.bridget-menu .button.active {
+.bridget-menu .button-bridgit.active {
   background: #ccc;
 }
 

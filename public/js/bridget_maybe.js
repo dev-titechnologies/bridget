@@ -1,7 +1,7 @@
 //------------CONFIGS------------------//
 
-var assetPath = 'http://bridget.com/public';
-var iFrameUrl = assetPath + '/bridget';
+var assetPath = 'http://bridget.com/';
+var iFrameUrl = 'http://bridget.com/bridget';
 var ContainerId = '#bridget_container'
 var IframeContainerId = '.bridget-frame'
 //------------/CONFIGS------------------//
@@ -10,15 +10,24 @@ promise1 = null;
 promise2 = null;
 
 if (typeof jQuery == 'undefined') {
-    promise1 = getScript("http://code.jquery.com/jquery-latest.min.js",function(){
-       $('head').append('<link rel="stylesheet" href="' + assetPath + '/css/bridgit.css" type="text/css" />');
-       $('head').append('<meta name="viewport" content="width=device-width,  initial-scale=1.0, maximum-scale=1.0, user-scalable=0>');
-       $(ContainerId).html('<div class="bridget-bridget-chat-btn active"> <div class="bridget-floating-bridget-chat enter">  <img src="' + assetPath + '/img/comment.png" width="25"> </div> </div>');
-       $(ContainerId).append('<section class="bridgit-messenger"> <div class="bridget-menu"> <div class="button">...</div> </div> <div class="bridget-chat"> <div class="bridget-chat-title"> <h1> What do you think? </h2> </div> <div class="bridget-frame">Loading... </div>   </div> </section>');
-       promiseFunctions();
-       addIframe()
-   });
 
+    promise1 = getScript("http://code.jquery.com/jquery-latest.min.js",function(){
+
+        injectScript();
+    });
+
+}else{
+    injectScript();
+}
+
+function injectScript()
+{
+  jQuery('head').append('<link rel="stylesheet" href="' + assetPath + '/css/bridgit.css" type="text/css" />');
+  jQuery('head').append('<meta name="viewport" content="width=device-width,  initial-scale=1.0, maximum-scale=1.0, user-scalable=0>');
+  jQuery(ContainerId).html('<div class="bridget-bridget-chat-btn active"> <div class="bridget-floating-bridget-chat enter">  <img src="' + assetPath + '/img/comment.png" width="25"> </div> </div>');
+  jQuery(ContainerId).append('<section class="bridgit-messenger"> <div class="bridget-menu"> <div class="button-bridgit">...</div> </div> <div class="bridget-chat"> <div class="bridget-chat-title"> <h1> What do you think? </h2> </div> <div class="bridget-frame">Loading... </div>   </div> </section>');
+  promiseFunctions();
+  addIframe() 
 }
 
 function getScript(url,cb) {
@@ -42,14 +51,14 @@ function getScript(url,cb) {
 function promiseFunctions() {
 
 
-    $('.bridget-bridget-chat-btn').click(function () {
-        $('.bridget-bridget-chat-btn').toggleClass('active');
-        $('.bridgit-messenger').toggleClass('active');
+    jQuery('.bridget-bridget-chat-btn').click(function () {
+        jQuery('.bridget-bridget-chat-btn').toggleClass('active');
+        jQuery('.bridgit-messenger').toggleClass('active');
     });
 
-    $('.bridget-menu').click(function () {
-        $('.bridget-bridget-chat-btn').toggleClass('active');
-        $('.bridgit-messenger').toggleClass('active');
+    jQuery('.bridget-menu').click(function () {
+        jQuery('.bridget-bridget-chat-btn').toggleClass('active');
+        jQuery('.bridgit-messenger').toggleClass('active');
     });
 
 
@@ -63,8 +72,8 @@ function addIframe() {
     }
     var url =window.location.href;
     iFrameUrl=iFrameUrl+'?bridget_url='+url+'&fingerPrint='+bridgetFingerprint;
-    var $frame = $('<iframe style="width:100%; height:100%;" src="' + iFrameUrl + '" frameborder="0">');
-    $(IframeContainerId).html($frame);
+    var $frame = jQuery('<iframe style="width:100%; height:100%;" src="' + iFrameUrl + '" frameborder="0">');
+    jQuery(IframeContainerId).html($frame);
 }
 
 

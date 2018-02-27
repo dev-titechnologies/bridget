@@ -16,7 +16,6 @@ class BridgetComments extends Eloquent
 		->where('url','=',$url)
 		->skip($startFrom*$limit)
 		->orderBy('created_at','desc')
-		->take($limit)
 		->get();
 	}
 
