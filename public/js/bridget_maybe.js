@@ -23,7 +23,10 @@ if (typeof jQuery == 'undefined') {
 function injectScript()
 {
   jQuery('head').append('<link rel="stylesheet" href="' + assetPath + '/css/bridgit.css" type="text/css" />');
-  jQuery('head').append('<meta name="viewport" content="width=device-width,  initial-scale=1.0, maximum-scale=1.0, user-scalable=0>');
+  var meta=document.createElement('meta');
+  meta.name='viewport';
+  meta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0');
+  document.getElementsByTagName('head')[0].appendChild(meta);
   jQuery(ContainerId).html('<div class="bridget-bridget-chat-btn active"> <div class="bridget-floating-bridget-chat enter">  <img src="' + assetPath + '/img/comment.png" width="25"> </div> </div>');
   jQuery(ContainerId).append('<section class="bridgit-messenger"> <div class="bridget-menu"> <div class="button-bridgit">...</div> </div> <div class="bridget-chat"> <div class="bridget-chat-title"> <h1> What do you think? </h2> </div> <div class="bridget-frame">Loading... </div>   </div> </section>');
   promiseFunctions();

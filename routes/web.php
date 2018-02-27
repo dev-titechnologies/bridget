@@ -11,17 +11,17 @@
 |
 */
 Route::get('/', function () {
-    return view('welcome');
+	return view('welcome');
 });
 Route::get('/docs', function () {
-    dd('<div id="bridget_container"></div> <script src="http://ec2-54-252-171-131.ap-southeast-2.compute.amazonaws.com/js/bridget_maybe.js"></script>');
+	dd('<div id="bridget_container"></div> <script src="http://ec2-54-252-171-131.ap-southeast-2.compute.amazonaws.com/js/bridget_maybe.js"></script>');
 });
-Route::get('fire/{message}', function ($message) {    
-	event(new App\Events\EventName($message,'test-channel1'));
-	return "event fired";
-});
+
 Route::get('bridget', 'BridgetController@getMessages');
 Route::get('seeder', 'BridgetController@index');
 Route::post('add-message', 'BridgetController@addMessage');
 Route::post('child-comments', 'BridgetController@childComments');
 Route::post('update-username', 'BridgetController@updateUserName');
+Route::get('refresh-csrf', function(){
+	return csrf_token();
+});

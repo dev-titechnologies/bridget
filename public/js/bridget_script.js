@@ -1,6 +1,6 @@
 var selectedElement=null;
 var anonymousCommentId=null;
-var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+
 
 var domElements=(function(){
     return {  
@@ -31,9 +31,9 @@ var domElements=(function(){
 
 var storage=(function(){
     getItem=function(item){
-       return localStorage.getItem(item);
-   }
-   setItem=function(item,value){
+     return localStorage.getItem(item);
+ }
+ setItem=function(item,value){
     localStorage.setItem(item,$(this).val()); 
     return true;  
 }
@@ -66,14 +66,18 @@ function sendNewMessage()
 function ajaxSuccessComment(request)
 {
     request.done(function(response){ 
+        reEnableTextBox(); 
         anonymousCommentId=response._id;     
-        getUserName();      
+        if(getUserName()){
+            $(domElements.messageTextBox).focus();
+        }
+
 
     });
 
     request.fail(function(jqXHR, textStatus) {
-     alert( "Request failed: " + textStatus );
- });
+       console.log( "Request failed: " + textStatus );
+   });
 }
 
 function displayNewMessage(data)
@@ -92,7 +96,7 @@ function displayNewMessage(data)
 
 function displayNewName(data)
 {
-   $('#commentuser-'+data.commentId).html(data.username); 
+ $('#commentuser-'+data.commentId).html(data.username); 
 }
 
 function getUserName()
@@ -125,14 +129,17 @@ function sendMsg(parentId,msg,url,fingerPrint)
         url: baseUrl+'/add-message',
         type: "POST",
         data: {
-            '_token': CSRF_TOKEN,
+            '_token': getCsrfToken(),
             'parent_id':parentId,
             'comment':msg,
             'url':url,
             'fingerPrint':fingerPrint,
             'username':localStorage.getItem('bridget-username')?localStorage.getItem('bridget-username'):'Anonymous'
         },
-        dataType: "json"
+        dataType: "json",
+        beforeSend:function(){
+            disableTextBox();
+        }
     });
 }
 
@@ -143,7 +150,7 @@ function showChildComments(parentId)
         url: baseUrl+'/child-comments',
         type: "POST",
         data: {
-            '_token': CSRF_TOKEN,
+            '_token': getCsrfToken(),
             'parent_id':parentId
         },
         dataType: "json"
@@ -156,20 +163,19 @@ function updateUserName(username)
     url: baseUrl+'/update-username',
     type: "POST",
     data: {
-        '_token': CSRF_TOKEN,
+        '_token': getCsrfToken(),
         'username':username
     },
     dataType: "json",
     beforeSend:function(){
-     $(domElements.messageTextBox).attr('disabled',true);
-     $(domElements.userReplayInput).attr('disabled',true);
- }
+        disableTextBox();
+    }
 });
 }
 
 function getParentId(ele)
 {
-   return $(ele).attr('id').split('-')[1];
+ return $(ele).attr('id').split('-')[1];
 }
 
 function updateScrollbar() {
@@ -180,15 +186,33 @@ function updateScrollbar() {
     });
 }
 
+function disableTextBox()
+{
+   $(domElements.messageTextBox).attr('disabled',true);
+   $(domElements.userReplayInput).attr('disabled',true);
+}
+
+function reEnableTextBox()
+{
+   $(domElements.messageTextBox).attr('disabled',false);
+   $(domElements.userReplayInput).attr('disabled',false);
+}
+
+function getCsrfToken()
+{
+    return $('meta[name="csrf-token"]').attr('content');
+}
+
 (function(){
 
     $(domElements.messagesContainer).mCustomScrollbar();
     updateScrollbar();
 
+
     $(document).on('click',domElements.sendMessageBtn,function(){
 
-     sendNewMessage();
- })
+       sendNewMessage();
+   })
 
 
 
@@ -201,8 +225,7 @@ function updateScrollbar() {
             $(domElements.botResponse).addClass('new');     
             
             setTimeout(function(){ $(domElements.botContainer).hide(); }, 3000);
-            $(domElements.messageTextBox).attr('disabled',false); 
-            $(domElements.userReplayInput).attr('disabled',false);
+            reEnableTextBox();
 
         }   
     });
@@ -230,9 +253,9 @@ function updateScrollbar() {
     $(document).on('keypress',domElements.userReplayInput,function(e){    
         var keycode = (e.keyCode ? e.keyCode : e.which);
         if(keycode == '13'){
-           var $input=$(this);  
+         var $input=$(this);  
 
-           if(!$input.val()){
+         if(!$input.val()){
             return;
         }
 
@@ -249,28 +272,32 @@ function updateScrollbar() {
 
     function ajaxSuccessReplay(request,$input)
     {
-     request.done(function(response) {       
-        $input.val('');
-        $input.parent('div').find(domElements.childComments).append(response.message);
-        $input.parent().parent().find('.see-all-replay').html(response.childCount);
-        getUserName();
+       request.done(function(response) { 
+           reEnableTextBox();      
+           $input.val('');
+           $input.parent('div').find(domElements.childComments).append(response.message);
+           $input.parent().parent().find('.see-all-replay').html(response.childCount);
+           if(getUserName()){
+            //
+            $(domElements.userReplayInput).focus();
+        }
+
     });
 
-     request.fail(function(jqXHR, textStatus) {
-      alert( "Request failed: " + textStatus );
-  }); 
- }
+       request.fail(function(jqXHR, textStatus) {
+          console.log( "Request failed: " + textStatus );
+      }); 
+   }
 
 
- $(document).on('click',domElements.anonymousPostBtn,function(e){
+   $(document).on('click',domElements.anonymousPostBtn,function(e){
     localStorage.setItem('bridget-username','Anonymous');
     updateUserName('Anonymous');
     $(domElements.botContainer).hide();
-    $(domElements.messageTextBox).attr('disabled',false); 
-    $(domElements.userReplayInput).attr('disabled',false);
+    reEnableTextBox();
 });
 
- $(document).on('click',domElements.seeAllReplays,function(e){
+   $(document).on('click',domElements.seeAllReplays,function(e){
     var ele=$(this);
     var parentDiv=$(ele).parent().parent();
     var request =showChildComments(getParentId($(parentDiv)));
@@ -283,11 +310,11 @@ function updateScrollbar() {
     });
 
     request.fail(function(jqXHR, textStatus) {
-      alert( "Request failed: " + textStatus );
+      console.log( "Request failed: " + textStatus );
   });
 
 });
- $(document).on('click',domElements.hideAllReplay,function(e){
+   $(document).on('click',domElements.hideAllReplay,function(e){
     $(this).hide();
     $(this).prev('div').show();
     var parentDiv=$(this).parent().parent();;
