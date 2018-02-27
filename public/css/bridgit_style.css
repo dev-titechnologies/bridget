@@ -677,3 +677,9 @@ textarea:focus, input:focus{
 .mCSB_inside>.mCSB_container {
     margin-right: 10px !important;
 }
+.load-previous-comments{
+  text-decoration: none;
+    display: block;
+    text-align: center;
+    color: #555;
+}

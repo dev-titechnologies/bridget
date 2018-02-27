@@ -13,24 +13,42 @@ class BridgetController extends Controller
 
 	public function getMessages(Request $request)
 	{
-		$fingerprint=$request->input('fingerPrint');
+		
 		$pageNumber=$request->input('page_num')?$request->input('page_num'):0;
 		$param = $request->input('bridget_url');
-		
-		session()->put('fingerPrint', $fingerprint);
-		$parentComments=BridgetComments::getParents($param,$pageNumber);
+
+		if (!Session::has('fingerPrint')){
+			$fingerprint=$request->input('fingerPrint');
+			session()->put('fingerPrint', $fingerprint);
+		}		
+		$realTimeOffset=$request->input('real_time_offset')?$request->input('real_time_offset'):0;
+		$parentComments=BridgetComments::getParents($param,$pageNumber,BridgetComments::COMMENTLIMIT,$realTimeOffset);
 		if(!BridgetUrl::isUrlExist($param)){
 			BridgetUrl::addUrl($param);
 		}
 		$url=BridgetUrl::getId($param);
 
 		$parentComments=$parentComments->reverse();
-		return view("bridget.messages", [
-			"param"=>$param,
-			"parentComments"=>$parentComments,
-			'channelId'=>$url->_id
-			]);		
+
+		if($request->ajax()){
+			$countParentComments=count($parentComments);
+			$showLoadMore=$countParentComments>=BridgetComments::COMMENTLIMIT?true:false;
+			$comments = view("bridget.parentComments",
+				[		
+				"comments"=>$parentComments,
+				])->render();
+			return response()->json(['count'=>$countParentComments,'success'=>true,'comments'=>$comments,'showLoadMore'=>$showLoadMore]);
+		}else{
+			return view("bridget.messages", [
+				"param"=>$param,
+				"parentComments"=>$parentComments,
+				'channelId'=>$url->_id
+				]);	
+		}
+
 	}
+
+
 
 	public function addMessage(Request $request)
 	{
@@ -85,42 +103,4 @@ class BridgetController extends Controller
 		
 	}
 
-	public function index()
-	{
-		$faker = \Faker\Factory::create();
-		$url=$faker->url;
-		$counter=0;
-		for ($i=1; $i <= 3; $i++) { 
-			$counter++;
-			$bridgetComments=new BridgetComments();
-			$bridgetComments->username=$faker->userName;
-			$bridgetComments->comment=$faker->text;
-			$bridgetComments->parent_id=null;
-			$bridgetComments->browser_fingerprint=$counter;
-			$bridgetComments->url=$url;
-			$bridgetComments->save();
-			for($j=1;$j<5;$j++){
-				$counter++;
-				$bridgetComments1=new BridgetComments();
-				$bridgetComments1->username=$faker->userName;
-				$bridgetComments1->comment=$faker->text;
-				$bridgetComments1->parent_id=$bridgetComments->_id;
-				$bridgetComments1->browser_fingerprint=$counter;
-				$bridgetComments1->url=$url;
-				$bridgetComments1->save();
-
-				for($k=1;$k<5;$k++){
-					$counter++;
-					$bridgetComments2=new BridgetComments();
-					$bridgetComments2->username=$faker->userName;
-					$bridgetComments2->comment=$faker->text;
-					$bridgetComments2->parent_id=$bridgetComments1->_id;
-					$bridgetComments2->browser_fingerprint=$counter;
-					$bridgetComments2->url=$url;
-					$bridgetComments2->save();
-				}
-			}
-
-		}
-	}
 }

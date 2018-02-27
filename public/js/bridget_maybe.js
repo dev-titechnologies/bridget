@@ -1,7 +1,7 @@
 //------------CONFIGS------------------//
 
-var assetPath = 'http://bridget.com/';
-var iFrameUrl = 'http://bridget.com/bridget';
+var assetPath = 'http://192.168.1.57/bridget_backend/public';
+var iFrameUrl = 'http://192.168.1.57/bridget_backend/public/bridget';
 var ContainerId = '#bridget_container'
 var IframeContainerId = '.bridget-frame'
 //------------/CONFIGS------------------//

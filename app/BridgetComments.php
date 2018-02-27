@@ -10,12 +10,13 @@ class BridgetComments extends Eloquent
 
 	const COMMENTLIMIT=15;
 
-	public static function getParents($url,$startFrom,$limit=self::COMMENTLIMIT)
+	public static function getParents($url,$startFrom,$limit=self::COMMENTLIMIT,$realTimeOffset)
 	{
 		return self::where('parent_id','=',null)
 		->where('url','=',$url)
-		->skip($startFrom*$limit)
+		->skip(($startFrom*$limit)+$realTimeOffset)
 		->orderBy('created_at','desc')
+		->limit(self::COMMENTLIMIT)
 		->get();
 	}
 
