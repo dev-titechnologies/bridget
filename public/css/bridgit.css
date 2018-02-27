@@ -262,6 +262,7 @@ font-weight: normal;
   font-size: 16px;
   margin: 0;
   padding: 0;
+    color: #fff !important;
 }
 
 .bridget-chat-title h2 {
