@@ -301,3 +301,8 @@ font-weight: normal;
   height: 98%;
   overflow: hidden;
 }
+
+.logo_bridgit{
+  float: left;
+  margin: -5px 22px;
+}
