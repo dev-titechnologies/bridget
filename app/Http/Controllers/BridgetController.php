@@ -103,4 +103,33 @@ class BridgetController extends Controller
 		
 	}
 
+	public function updateDisplayName(Request $request)
+	{
+		$username=$request->input('username');
+		$comments=$request->input('comments');
+		$url=$request->input('url');
+		$channel=BridgetUrl::getId($url);
+
+		$commentData=array(
+			'username'=>$username,
+			'commentIds'=>$comments
+			);
+
+		event(new \App\Events\UpdateUserName($commentData,$channel->_id));
+	}
+
+	public function updateTypingStatus(Request $request)
+	{
+		$username=$request->input('username');
+		$url=$request->input('url');
+		$channel=BridgetUrl::getId($url);
+
+		$commentData=array(
+			'username'=>$username,
+			'fingerprint'=>Session::get('fingerPrint')
+			);
+
+		event(new \App\Events\UpdateTypingStatus($commentData,$channel->_id));
+	}
+
 }

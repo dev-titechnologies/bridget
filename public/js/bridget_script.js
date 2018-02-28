@@ -7,7 +7,6 @@ var domElements=(function(){
     return {  
 
         'replayBtn':'.replay-btn',
-        'chatContainer':'.floating-chat',
         'messagesContainer':'.messages-content',
         'mCSBContainer':'#mCSB_1_container',
         'chatContainer':'.chat-content',
@@ -26,21 +25,25 @@ var domElements=(function(){
         'botResponse':'.bot-response',
         'noComments':'.no-comments',
         'childComments':'.child-comments',
-        'loadPreviousComment':'.load-previous-comments'
+        'loadPreviousComment':'.load-previous-comments',
+        'typingBar':'#typing-bar',
+        'typingUser':'.typing-user'
     }
 
 })();
+
+
 
 var storage=(function(){
     getItem=function(item){
        return localStorage.getItem(item);
    }
    setItem=function(item,value){
-    localStorage.setItem(item,$(this).val()); 
+    localStorage.setItem(item,value); 
     return true;  
 }
-removeItem=function(){
-
+removeItem=function(item){
+    localStorage.removeItem(item); 
 }
 return {
     getItem:getItem,
@@ -50,13 +53,82 @@ return {
 
 })();
 
+var bridgetLoader=(function(){
+
+    var element;
+    var cachedHtml;
+    init=function(ele){
+        element=$(ele);
+        cachedHtml=$(ele).text();
+        $(element).html('<i class="fa fa-circle-o-notch fa-spin"></i>');
+    }
+    end=function(){
+        setTimeout(function(){ $(element).text(cachedHtml); }, 500);       
+    }
+
+    return {
+        init:init,
+        end:end
+    }
+
+})();
+
+
+var jsonStorage=(function(){
+    var object=[];
+    init=function(jsonObject){
+        if(jsonObject){
+            object =JSON.parse(jsonObject);
+        }
+    }
+    setStorage=function(id){
+        object.push(id);
+        storage.setItem('myCommentIds',JSON.stringify(object));  
+    }
+    getStorage=function(){
+        return object;
+    }
+    return {
+        init:init,
+        setStorage:setStorage,
+        getStorage:getStorage
+    }
+
+})();
+
+function typingHtml()
+{
+
+
+    return '<div class="message loading" id="typing-bar">'+
+    '<div class="typing-user"></div>'+
+    '<figure class="avatar">'+
+    '<img src="http://www.fsirbike.com/images/anonymous-user.png">'+
+    '</figure>'+
+    '<span>'+
+    '</span>'+
+    '</div>';
+}
+
+
+function displayTypingBar(data)
+{
+    $(domElements.typingBar).remove();
+    if(fingerprint!=data.fingerprint){
+        $(domElements.chatContainer).append(typingHtml());
+        $(domElements.typingUser).html(data.username+" "+"is typing..");
+        updateScrollbar();
+    }
+}
+
+
 function sendNewMessage() 
 {
 
     var userInput = $(domElements.messageTextBox);
     var newMessage = userInput.val();
 
-    if (!newMessage) {
+    if (!newMessage.trim()) {
         return;
     }   
 
@@ -71,6 +143,8 @@ function ajaxSuccessComment(request)
         reEnableTextBox();     
         if(getUserName()){
             $(domElements.messageTextBox).focus();
+        }else{
+            jsonStorage.setStorage(response._id);
         }
 
 
@@ -84,6 +158,8 @@ function ajaxSuccessComment(request)
 function displayNewMessage(data)
 {
     realTimeMsgCount++;
+    
+    $(domElements.typingBar).remove();
     $(domElements.noComments).hide();
     $(domElements.chatContainer).append(data.message); 
     if(fingerprint!=data.commentFingerPrint){
@@ -97,7 +173,12 @@ function displayNewMessage(data)
 
 function displayNewName(data)
 {
-   $('#commentuser-'+data.commentId).html(data.username); 
+    var commentIds=data.commentIds;
+    for (var key in commentIds) {
+        $('#commentuser-'+commentIds[key]).html(data.username);      
+    }
+    storage.removeItem('myCommentIds');
+
 }
 
 function getUserName()
@@ -167,6 +248,41 @@ function updateUserName(username)
 });
 }
 
+function updateDisplayName(comments,username)
+{
+  return $.ajax({
+    url: baseUrl+'/update-display-name',
+    type: "POST",
+    data: {
+        '_token': getCsrfToken(),
+        'username':username,
+        'comments':comments,
+        'url':pageUrl
+    },
+    dataType: "json",
+    beforeSend:function(){
+
+    }
+});
+}
+
+function sendTypingProgress(username)
+{
+   return $.ajax({
+    url: baseUrl+'/update-typing-status',
+    type: "POST",
+    data: {
+        '_token': getCsrfToken(),
+        'username':username,
+        'url':pageUrl
+    },
+    dataType: "json",
+    beforeSend:function(){
+
+    }
+}); 
+}
+
 function getParentId(ele)
 {
    return $(ele).attr('id').split('-')[1];
@@ -217,27 +333,39 @@ function loadPreviousComment(pageNum)
 
 
 (function(){
-   
-    
+
+    if(!storage.getItem('bridget-username')){
+        jsonStorage.init(storage.getItem('myCommentIds'));  
+    }
+
     $(domElements.messagesContainer).mCustomScrollbar();
     updateScrollbar();
 
-
     $(document).on('click',domElements.sendMessageBtn,function(){
-
      sendNewMessage();
  })
 
+    $(document).on('keyup',domElements.messageTextBox,function(){
 
+        if(!storage.getItem('bridget-username')){
+         var userName='someone';
+     }else{
+        var userName=storage.getItem('bridget-username');
+    }
+    if (!$(this).val().trim()) {
+        return;
+    } 
+    sendTypingProgress(userName);
+})
 
     $(document).on('keypress',domElements.userNameField,function(e){
         var keycode = (e.keyCode ? e.keyCode : e.which);
         if(keycode == '13' && $(this).val()!=''){            
-            updateUserName($(this).val());     
+            updateUserName($(this).val()); 
+            updateDisplayName(jsonStorage.getStorage(),$(this).val());
             localStorage.setItem('bridget-username',$(this).val());   
             $(domElements.botResponse).html('Thank you'+' '+$(this).val());     
-            $(domElements.botResponse).addClass('new');     
-            
+            $(domElements.botResponse).addClass('new'); 
             setTimeout(function(){ $(domElements.botContainer).hide(); }, 3000);
             reEnableTextBox();
 
@@ -269,7 +397,7 @@ function loadPreviousComment(pageNum)
         if(keycode == '13'){
            var $input=$(this);  
 
-           if(!$input.val()){
+           if(!$input.val().trim()){
             return;
         }
 
@@ -315,8 +443,9 @@ function loadPreviousComment(pageNum)
     var ele=$(this);
     var parentDiv=$(ele).parent().parent();
     var request =showChildComments(getParentId($(parentDiv)));
-
+    bridgetLoader.init($(ele));
     request.done(function(response) {
+        bridgetLoader.end();  
         if($(parentDiv).is(':last-child')){
             updateScrollbar();
         }
@@ -342,18 +471,17 @@ function loadPreviousComment(pageNum)
  $(document).on('click',domElements.loadPreviousComment,function(e){  
     e.preventDefault();
     pageNum++;
+    var ele=$(this);  
+    bridgetLoader.init($(ele));
     loadPreviousComment(pageNum).done(function(response){ 
-        if(response.success){
-
-           $(domElements.chatContainer).prepend(response.comments); 
-           if(!response.showLoadMore){
-            $(domElements.loadPreviousComment).hide();            
+        if(response.success){ 
+            bridgetLoader.end();  
+            $(domElements.chatContainer).prepend(response.comments); 
+            if(!response.showLoadMore){
+                $(domElements.loadPreviousComment).hide();            
+            }
         }
-
-    }
-
-
-});
+    });
 })
 
 

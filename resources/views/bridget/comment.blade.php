@@ -10,7 +10,7 @@ use App\BridgetComments;
 
 		</div>
 		<div class="timestamp hidetlink hide-all-replay cursor_pointer"  style="display: none;"> Hide </div>
-		<div class="timestamp timelink"><span class="timeago" title="{{strtotime($comment->created_at)}}"></span></div>.
+		<div class="timestamp timelink"><span class="timeago" datetime="{{strtotime($comment->created_at)}}"></span></div>
 	</div>
 
 

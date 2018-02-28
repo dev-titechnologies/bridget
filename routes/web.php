@@ -22,6 +22,8 @@ Route::get('seeder', 'BridgetController@index');
 Route::post('add-message', 'BridgetController@addMessage');
 Route::post('child-comments', 'BridgetController@childComments');
 Route::post('update-username', 'BridgetController@updateUserName');
+Route::post('update-display-name', 'BridgetController@updateDisplayName');
+Route::post('update-typing-status', 'BridgetController@updateTypingStatus');
 Route::get('refresh-csrf', function(){
 	return csrf_token();
 });

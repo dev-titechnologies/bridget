@@ -3,5 +3,5 @@
 	@include('bridget.childComment',['comment' => $child])
 	@endforeach
 </div>
-<input class="user-replay" type="text" placeholder="Add a reply...">
+<textarea class="user-replay" placeholder="Add a reply..." rows="4" cols="50"></textarea>
 
