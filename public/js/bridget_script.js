@@ -36,9 +36,9 @@ var domElements=(function(){
 
 var storage=(function(){
     getItem=function(item){
-     return localStorage.getItem(item);
- }
- setItem=function(item,value){
+       return localStorage.getItem(item);
+   }
+   setItem=function(item,value){
     localStorage.setItem(item,value); 
     return true;  
 }
@@ -159,8 +159,8 @@ function ajaxSuccessComment(request)
     });
 
     request.fail(function(jqXHR, textStatus) {
-       console.log( "Request failed: " + textStatus );
-   });
+     console.log( "Request failed: " + textStatus );
+ });
 }
 
 function displayNewMessage(data)
@@ -276,7 +276,7 @@ function updateDisplayName(comments,username)
 
 function sendTypingProgress(username)
 {
- return $.ajax({
+   return $.ajax({
     url: baseUrl+'/update-typing-status',
     type: "POST",
     data: {
@@ -293,7 +293,7 @@ function sendTypingProgress(username)
 
 function getParentId(ele)
 {
- return $(ele).attr('id').split('-')[1];
+   return $(ele).attr('id').split('-')[1];
 }
 
 function updateScrollbar() {
@@ -306,14 +306,14 @@ function updateScrollbar() {
 
 function disableTextBox()
 {
-   $(domElements.messageTextBox).attr('disabled',true);
-   $(domElements.userReplayInput).attr('disabled',true);
+ $(domElements.messageTextBox).attr('disabled',true);
+ $(domElements.userReplayInput).attr('disabled',true);
 }
 
 function reEnableTextBox()
 {
-   $(domElements.messageTextBox).attr('disabled',false);
-   $(domElements.userReplayInput).attr('disabled',false);
+ $(domElements.messageTextBox).attr('disabled',false);
+ $(domElements.userReplayInput).attr('disabled',false);
 }
 
 function getCsrfToken()
@@ -342,7 +342,14 @@ function loadPreviousComment(pageNum)
 
 (function(){
 
-    
+    jQuery.each(jQuery('textarea[data-autoresize]'), function() {
+        var offset = this.offsetHeight - this.clientHeight;
+        
+        var resizeTextarea = function(el) {
+            jQuery(el).css('height', 'auto').css('height', el.scrollHeight + offset);
+        };
+        jQuery(this).on('keyup input', function() { resizeTextarea(this); }).removeAttr('data-autoresize');
+    });
 
     if(!storage.getItem('bridget-username')){
         jsonStorage.init(storage.getItem('myCommentIds')); 
@@ -359,16 +366,16 @@ function loadPreviousComment(pageNum)
     //autosize($(domElements.messageTextBox));
 
     $(document).on('click',domElements.sendMessageBtn,function(){
-       sendNewMessage();
-   })
+     sendNewMessage();
+ })
 
 
 
     $(document).on('keypress',domElements.messageTextBox,function(){
 
         if(!storage.getItem('bridget-username')){
-           var userName='someone';
-       }else{
+         var userName='someone';
+     }else{
         var userName=storage.getItem('bridget-username');
     }
     if (!$(this).val().trim()) {
@@ -417,54 +424,54 @@ function loadPreviousComment(pageNum)
 
         var keycode = (e.keyCode ? e.keyCode : e.which);
         if (keycode == 13 && e.shiftKey) {          
-           e.stopPropagation();
-       }
-       else if(keycode == '13'){
-         var $input=$(this);  
+         e.stopPropagation();
+     }
+     else if(keycode == '13'){
+       var $input=$(this);  
 
-         if(!$input.val().trim()){
-            return;
-        }
-
-        var parentId=getParentId($(this).parent().parent());
-
-
-        var request =sendMsg(parentId,$input.val(),pageUrl,fingerprint);
-
-        ajaxSuccessReplay(request,$input);
-
-
+       if(!$input.val().trim()){
+        return;
     }
+
+    var parentId=getParentId($(this).parent().parent());
+
+
+    var request =sendMsg(parentId,$input.val(),pageUrl,fingerprint);
+
+    ajaxSuccessReplay(request,$input);
+
+
+}
 });
 
     function ajaxSuccessReplay(request,$input)
     {
-       request.done(function(response) { 
-           reEnableTextBox();      
-           $input.val('');
-           $input.parent('div').find(domElements.childComments).append(response.message);
-           $input.parent().parent().find('.see-all-replay').html(response.childCount);
-           if(getUserName()){
+     request.done(function(response) { 
+         reEnableTextBox();      
+         $input.val('');
+         $input.parent('div').find(domElements.childComments).append(response.message);
+         $input.parent().parent().find('.see-all-replay').html(response.childCount);
+         if(getUserName()){
             //
             $input.focus();
         }
 
     });
 
-       request.fail(function(jqXHR, textStatus) {
-          console.log( "Request failed: " + textStatus );
-      }); 
-   }
+     request.fail(function(jqXHR, textStatus) {
+      console.log( "Request failed: " + textStatus );
+  }); 
+ }
 
 
-   $(document).on('click',domElements.anonymousPostBtn,function(e){
+ $(document).on('click',domElements.anonymousPostBtn,function(e){
     localStorage.setItem('bridget-username','Anonymous');
     updateUserName('Anonymous');
     $(domElements.botContainer).hide();
     reEnableTextBox();
 });
 
-   $(document).on('click',domElements.seeAllReplays,function(e){
+ $(document).on('click',domElements.seeAllReplays,function(e){
     var ele=$(this);
     var parentDiv=$(ele).parent().parent();
     var request =showChildComments(getParentId($(parentDiv)));
@@ -486,14 +493,14 @@ function loadPreviousComment(pageNum)
   });
 
 });
-   $(document).on('click',domElements.hideAllReplay,function(e){
+ $(document).on('click',domElements.hideAllReplay,function(e){
     $(this).hide();
     $(this).prev('div').show();
     var parentDiv=$(this).parent().parent();;
     $(parentDiv).find(domElements.childCommentContainer).hide();
 });
 
-   $(document).on('click',domElements.loadPreviousComment,function(e){  
+ $(document).on('click',domElements.loadPreviousComment,function(e){  
     e.preventDefault();
     pageNum++;
     var ele=$(this);  
