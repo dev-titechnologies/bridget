@@ -3,18 +3,24 @@
 namespace App;
 
 use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
+use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 
 class BridgetComments extends Eloquent
 {
 	protected $collection = 'bridget_comments';
 
-	const COMMENTLIMIT=15;
+	const COMMENTLIMIT=15;	
+	use SoftDeletes;
 
-	public static function getParents($url,$startFrom,$limit=self::COMMENTLIMIT,$realTimeOffset)
+	protected $dates = ['deleted_at'];
+
+
+	public static function getParents($url,$startFrom,$limit=self::COMMENTLIMIT,$realTimeOffset,$deletedOffset)
 	{
 		return self::where('parent_id','=',null)
 		->where('url','=',$url)
-		->skip(($startFrom*$limit)+$realTimeOffset)
+		->where('url','=',$url)
+		->skip(($startFrom*$limit)+$realTimeOffset-$deletedOffset)
 		->orderBy('created_at','desc')
 		->limit(self::COMMENTLIMIT)
 		->get();
@@ -59,7 +65,7 @@ class BridgetComments extends Eloquent
 	{
 		$count=self::getChildrensCount($parentId);
 		if($count==0){
-			return 'Add Reply';
+			return 'Add reply';
 		}elseif($count==1){
 			return '1 Reply';
 		}else{

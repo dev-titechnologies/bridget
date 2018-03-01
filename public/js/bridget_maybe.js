@@ -34,7 +34,7 @@ function injectScript()
   document.getElementsByTagName('head')[0].appendChild(meta);
 
   jQuery(ContainerId).html('<div class="bridget-bridget-chat-btn active"> <div class="bridget-floating-bridget-chat enter">  <img src="' + assetPath + '/img/comment.png" width="25"> </div> </div>');
-  jQuery(ContainerId).append('<section class="bridgit-messenger"> <div class="bridget-menu"> <div class="button-bridgit">...</div> </div> <div class="bridget-chat"> <div class="bridget-chat-title"><span class="logo_bridgit"><img src="img/logo.png"></span> <h1> What do you think? </h2> </div> <div class="bridget-frame">Loading... </div>   </div> </section>');
+  jQuery(ContainerId).append('<section class="bridgit-messenger"> <div class="bridget-menu"> <div class="button-bridgit">x</div> </div> <div class="bridget-chat"> <div class="bridget-chat-title"><span class="logo_bridgit"><img src="img/logo.png"></span> </div> <div class="bridget-frame">Loading... </div>   </div> </section>');
   promiseFunctions();
   addIframe() 
 }

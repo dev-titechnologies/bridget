@@ -207,8 +207,8 @@ Message Box
   position: relative;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
-  border-radius: 20px;
-  height: 14px;
+  border-radius: 20px;/*
+  height: 14px;*/
   border: 1px solid #ccc;
   margin-bottom: 0;
 }
@@ -224,6 +224,7 @@ Message Box
   padding-right: 20px;
   width: 85%;
   color: #444;
+  
 }
 
 .message-box textarea:focus:-webkit-placeholder {
@@ -247,6 +248,7 @@ Message Box
   outline: none !important;
   transition: background .2s ease;
   cursor: pointer;
+  display: none;
 }
 
 .message-box .message-submit:hover {
@@ -693,4 +695,11 @@ textarea:focus, input:focus{
  text-align: right;
  float: right;
  margin-top: -5px;
+}
+
+@media (max-device-width: 667px) {
+
+  .message-box .message-submit {
+    display: block;
+ }
 }

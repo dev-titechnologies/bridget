@@ -22,7 +22,8 @@ class BridgetController extends Controller
 			session()->put('fingerPrint', $fingerprint);
 		}		
 		$realTimeOffset=$request->input('real_time_offset')?$request->input('real_time_offset'):0;
-		$parentComments=BridgetComments::getParents($param,$pageNumber,BridgetComments::COMMENTLIMIT,$realTimeOffset);
+		$deletedOffset=$request->input('deleted_offset')?$request->input('deleted_offset'):0;
+		$parentComments=BridgetComments::getParents($param,$pageNumber,BridgetComments::COMMENTLIMIT,$realTimeOffset,$deletedOffset);
 		if(!BridgetUrl::isUrlExist($param)){
 			BridgetUrl::addUrl($param);
 		}
@@ -130,6 +131,11 @@ class BridgetController extends Controller
 			);
 
 		event(new \App\Events\UpdateTypingStatus($commentData,$channel->_id));
+	}
+
+	public function deleteUserMessage()
+	{
+
 	}
 
 }

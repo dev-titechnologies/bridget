@@ -36,9 +36,9 @@ var domElements=(function(){
 
 var storage=(function(){
     getItem=function(item){
-       return localStorage.getItem(item);
-   }
-   setItem=function(item,value){
+     return localStorage.getItem(item);
+ }
+ setItem=function(item,value){
     localStorage.setItem(item,value); 
     return true;  
 }
@@ -110,6 +110,14 @@ function typingHtml()
     '</div>';
 }
 
+function userNameFormHtml()
+{
+    return 'My name is Bridgit, what can I call you?<br>'+
+    '<input class="name_field" type="text" placeholder="Enter name...">'+
+    '<div class="timestamp"></div>'+
+    '<span class="cursor_pointer anonymous-post-btn">Or Post as anonymous</span>';
+}
+
 
 function displayTypingBar(data)
 {
@@ -151,8 +159,8 @@ function ajaxSuccessComment(request)
     });
 
     request.fail(function(jqXHR, textStatus) {
-     console.log( "Request failed: " + textStatus );
- });
+       console.log( "Request failed: " + textStatus );
+   });
 }
 
 function displayNewMessage(data)
@@ -187,7 +195,7 @@ function getUserName()
     var bridgetUsername = localStorage.getItem('bridget-username');
 
     if(!bridgetUsername){
-
+        $(domElements.botResponse).html(userNameFormHtml());
         $(domElements.botContainer).show();
         $(domElements.userNameField).focus();
         updateScrollbar();
@@ -268,7 +276,7 @@ function updateDisplayName(comments,username)
 
 function sendTypingProgress(username)
 {
-   return $.ajax({
+ return $.ajax({
     url: baseUrl+'/update-typing-status',
     type: "POST",
     data: {
@@ -285,7 +293,7 @@ function sendTypingProgress(username)
 
 function getParentId(ele)
 {
-   return $(ele).attr('id').split('-')[1];
+ return $(ele).attr('id').split('-')[1];
 }
 
 function updateScrollbar() {
@@ -298,14 +306,14 @@ function updateScrollbar() {
 
 function disableTextBox()
 {
- $(domElements.messageTextBox).attr('disabled',true);
- $(domElements.userReplayInput).attr('disabled',true);
+   $(domElements.messageTextBox).attr('disabled',true);
+   $(domElements.userReplayInput).attr('disabled',true);
 }
 
 function reEnableTextBox()
 {
- $(domElements.messageTextBox).attr('disabled',false);
- $(domElements.userReplayInput).attr('disabled',false);
+   $(domElements.messageTextBox).attr('disabled',false);
+   $(domElements.userReplayInput).attr('disabled',false);
 }
 
 function getCsrfToken()
@@ -334,27 +342,38 @@ function loadPreviousComment(pageNum)
 
 (function(){
 
+    
+
     if(!storage.getItem('bridget-username')){
-        jsonStorage.init(storage.getItem('myCommentIds'));  
-    }
+        jsonStorage.init(storage.getItem('myCommentIds')); 
+        $(domElements.botResponse).html('What do you think of this?');
+        $(domElements.botContainer).show(); 
+    }    
+
+    setInterval(function(){  $(domElements.typingBar).remove(); }, 3000);
 
     $(domElements.messagesContainer).mCustomScrollbar();
+
     updateScrollbar();
 
-    $(document).on('click',domElements.sendMessageBtn,function(){
-     sendNewMessage();
- })
+    //autosize($(domElements.messageTextBox));
 
-    $(document).on('keyup',domElements.messageTextBox,function(){
+    $(document).on('click',domElements.sendMessageBtn,function(){
+       sendNewMessage();
+   })
+
+
+
+    $(document).on('keypress',domElements.messageTextBox,function(){
 
         if(!storage.getItem('bridget-username')){
-         var userName='someone';
-     }else{
+           var userName='someone';
+       }else{
         var userName=storage.getItem('bridget-username');
     }
     if (!$(this).val().trim()) {
         return;
-    } 
+    }    
     sendTypingProgress(userName);
 })
 
@@ -386,18 +405,24 @@ function loadPreviousComment(pageNum)
     $(document).on('keypress',domElements.messageTextBox,function(e){ 
 
         var keycode = (e.keyCode ? e.keyCode : e.which);
-
-        if(keycode == '13'){
+        if (keycode == 13 && e.shiftKey) {        
+            e.stopPropagation();
+        }
+        else if(keycode == '13'){
             sendNewMessage();
         }
     });
 
-    $(document).on('keypress',domElements.userReplayInput,function(e){    
-        var keycode = (e.keyCode ? e.keyCode : e.which);
-        if(keycode == '13'){
-           var $input=$(this);  
+    $(document).on('keypress',domElements.userReplayInput,function(e){   
 
-           if(!$input.val().trim()){
+        var keycode = (e.keyCode ? e.keyCode : e.which);
+        if (keycode == 13 && e.shiftKey) {          
+           e.stopPropagation();
+       }
+       else if(keycode == '13'){
+         var $input=$(this);  
+
+         if(!$input.val().trim()){
             return;
         }
 
@@ -414,32 +439,32 @@ function loadPreviousComment(pageNum)
 
     function ajaxSuccessReplay(request,$input)
     {
-     request.done(function(response) { 
-         reEnableTextBox();      
-         $input.val('');
-         $input.parent('div').find(domElements.childComments).append(response.message);
-         $input.parent().parent().find('.see-all-replay').html(response.childCount);
-         if(getUserName()){
+       request.done(function(response) { 
+           reEnableTextBox();      
+           $input.val('');
+           $input.parent('div').find(domElements.childComments).append(response.message);
+           $input.parent().parent().find('.see-all-replay').html(response.childCount);
+           if(getUserName()){
             //
             $input.focus();
         }
 
     });
 
-     request.fail(function(jqXHR, textStatus) {
-      console.log( "Request failed: " + textStatus );
-  }); 
- }
+       request.fail(function(jqXHR, textStatus) {
+          console.log( "Request failed: " + textStatus );
+      }); 
+   }
 
 
- $(document).on('click',domElements.anonymousPostBtn,function(e){
+   $(document).on('click',domElements.anonymousPostBtn,function(e){
     localStorage.setItem('bridget-username','Anonymous');
     updateUserName('Anonymous');
     $(domElements.botContainer).hide();
     reEnableTextBox();
 });
 
- $(document).on('click',domElements.seeAllReplays,function(e){
+   $(document).on('click',domElements.seeAllReplays,function(e){
     var ele=$(this);
     var parentDiv=$(ele).parent().parent();
     var request =showChildComments(getParentId($(parentDiv)));
@@ -461,14 +486,14 @@ function loadPreviousComment(pageNum)
   });
 
 });
- $(document).on('click',domElements.hideAllReplay,function(e){
+   $(document).on('click',domElements.hideAllReplay,function(e){
     $(this).hide();
     $(this).prev('div').show();
     var parentDiv=$(this).parent().parent();;
     $(parentDiv).find(domElements.childCommentContainer).hide();
 });
 
- $(document).on('click',domElements.loadPreviousComment,function(e){  
+   $(document).on('click',domElements.loadPreviousComment,function(e){  
     e.preventDefault();
     pageNum++;
     var ele=$(this);  

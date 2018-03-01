@@ -1,5 +1,5 @@
 <?php
-
+use App\BridgetComments;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -11,6 +11,9 @@
 |
 */
 Route::get('/', function () {
+	$b=App\BridgetComments::onlyTrashed()
+                ->count();
+	print_r($b);
 	return view('welcome');
 });
 Route::get('/docs', function () {

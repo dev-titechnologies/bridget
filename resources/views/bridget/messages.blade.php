@@ -26,10 +26,7 @@ use App\BridgetComments;
 						<img src="img/bot.png">
 					</figure>
 					<div  class="bot-response">
-						My name is Bridgit, what can I call you?<br>
-						<input class="name_field" type="text" placeholder="Enter name...">
-						<div class="timestamp"></div>
-						<span class="cursor_pointer anonymous-post-btn">Or Post as anonymous</span>
+						
 					</div>
 				</div>
 
@@ -38,7 +35,7 @@ use App\BridgetComments;
 		</div>
 		
 		<div class="message-box">
-			<textarea class="message-input comment-box" placeholder="Add a comment..."></textarea>
+			<textarea class="message-input comment-box" placeholder="Add a comment..." data-autoresize></textarea>
 			<button type="submit" class="message-submit" id="sendMessage">Send</button>
 		</div>
 	</div>
@@ -46,6 +43,7 @@ use App\BridgetComments;
 </section>
 
 <script type="text/javascript" src="<?php echo env('SOCKET_URL');?>/socket.io/socket.io.js"></script>
+
 <script> 
 	var socket = io('<?php echo env('SOCKET_URL');?>');
 	var channel = "<?php echo $channelId; ?>:App\\Events\\SendMessage";
