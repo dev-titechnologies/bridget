@@ -20,16 +20,27 @@ class BridgetController extends Controller
 		if (!Session::has('fingerPrint')){
 			$fingerprint=$request->input('fingerPrint');
 			session()->put('fingerPrint', $fingerprint);
-		}		
-		$realTimeOffset=$request->input('real_time_offset')?$request->input('real_time_offset'):0;
-		$deletedOffset=$request->input('deleted_offset')?$request->input('deleted_offset'):0;
-		$parentComments=BridgetComments::getParents($param,$pageNumber,BridgetComments::COMMENTLIMIT,$realTimeOffset,$deletedOffset);
+		}
+
+		$excludedIds=$request->input('excluded_ids')?explode(',',$request->input('excluded_ids')):[];
+		$parentComments=BridgetComments::getParents($param,BridgetComments::COMMENTLIMIT,$excludedIds);
+
 		if(!BridgetUrl::isUrlExist($param)){
 			BridgetUrl::addUrl($param);
 		}
 		$url=BridgetUrl::getId($param);
 
+
 		$parentComments=$parentComments->reverse();
+
+		$commentIds=null;
+		foreach($excludedIds as $excludedId):
+			$commentIds.=$excludedId.',';
+		endforeach;
+		foreach($parentComments as $parentComment):
+			$commentIds.=$parentComment->_id.',';
+		endforeach; 
+		$commentIds=rtrim($commentIds,',');
 
 		if($request->ajax()){
 			$countParentComments=count($parentComments);
@@ -38,12 +49,13 @@ class BridgetController extends Controller
 				[		
 				"comments"=>$parentComments,
 				])->render();
-			return response()->json(['count'=>$countParentComments,'success'=>true,'comments'=>$comments,'showLoadMore'=>$showLoadMore]);
+			return response()->json(['count'=>$countParentComments,'success'=>true,'comments'=>$comments,'showLoadMore'=>$showLoadMore,'commentIds'=>$commentIds]);
 		}else{
 			return view("bridget.messages", [
 				"param"=>$param,
 				"parentComments"=>$parentComments,
-				'channelId'=>$url->_id
+				'channelId'=>$url->_id,
+				'commentIds'=>$commentIds
 				]);	
 		}
 
@@ -133,9 +145,62 @@ class BridgetController extends Controller
 		event(new \App\Events\UpdateTypingStatus($commentData,$channel->_id));
 	}
 
-	public function deleteUserMessage()
+	public function deleteUserMessage(Request $request)
 	{
+		
+		$id=$request->input('_id');
+		$bridgetUrl=$request->input('bridget_url');
+		$channel=BridgetUrl::getId($bridgetUrl);
+		$comment=BridgetComments::findCommentById($id);
+		if($comment){
+			$sessionFingerPrint=Session::get('fingerPrint');
+			$commentFingerPrint=$comment->browser_fingerprint;
 
+			if($sessionFingerPrint!=$commentFingerPrint){
+				return response()->json(['success'=>false,'msg'=>'You are not allowed to perform this action']);
+			}else{	
+				
+				if($comment->delete())
+				{
+					
+					if(!$comment->parent_id){					
+						$commentId=$comment->_id;
+						$commentData=array('commentId'=>$commentId);
+						event(new \App\Events\DeleteMessage($commentData,$channel->_id));
+					}
+					return response()->json(['success'=>true]);
+				}				
+			}
+		}else{
+			return response()->json(['success'=>false,'msg'=>'failed to load the resource']);
+		}
+	}
+
+	public function editUserMessage(Request $request)
+	{
+		$id=$request->input('_id');
+		$bridgetUrl=$request->input('bridget_url');
+		$newComment=$request->input('edited_comment');
+		$channel=BridgetUrl::getId($bridgetUrl);
+		$comment=BridgetComments::findCommentById($id);
+		if($comment){
+			$sessionFingerPrint=Session::get('fingerPrint');
+			$commentFingerPrint=$comment->browser_fingerprint;
+
+			if($sessionFingerPrint!=$commentFingerPrint){
+				return response()->json(['success'=>false,'msg'=>'You are not allowed to perform this action']);
+			}else{	
+				
+				$comment->comment=$newComment;
+				$comment->isEdited=true;
+				$comment->save();
+				$commentData=array('commentId'=>$comment->_id,'newComment'=>$newComment);
+				event(new \App\Events\EditMessage($commentData,$channel->_id));
+				return response()->json(['success'=>true]);
+			}
+		}else{
+			return response()->json(['success'=>false,'msg'=>'failed to load the resource']);
+		}
 	}
 
 }

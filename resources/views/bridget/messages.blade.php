@@ -30,14 +30,18 @@ use App\BridgetComments;
 					</div>
 				</div>
 
+				<input type="hidden" id="comment-ids" value="{{$commentIds}}">
 			</div> 
 
 		</div>
 		
 		<div class="message-box">
-			<textarea class="message-input comment-box" placeholder="Add a comment..." data-autoresize></textarea>
-			<button type="submit" class="message-submit" id="sendMessage">Send</button>
+			<textarea class="message-input comment-box add-comment-box" placeholder="Add a comment..." data-autoresize></textarea>
+			<input type="hidden" id="old-comment-id">
+			<textarea class="message-input edit-comment-box edit-ele" data-autoresize></textarea>			
+			<button type="submit" class="message-submit" id="sendMessage">Send</button>	
 		</div>
+		<span class="edit-ele cancel-edit cursor_pointer">Cancel</span>
 	</div>
 
 </section>
@@ -46,18 +50,25 @@ use App\BridgetComments;
 
 <script> 
 	var socket = io('<?php echo env('SOCKET_URL');?>');
-	var channel = "<?php echo $channelId; ?>:App\\Events\\SendMessage";
-	socket.on(channel, function(data){
-
+	var channel1 = "<?php echo $channelId; ?>:App\\Events\\SendMessage";
+	socket.on(channel1, function(data){
 		displayNewMessage(data.data);
 	});
-	var channel = "<?php echo $channelId; ?>:App\\Events\\UpdateUserName";
-	socket.on(channel, function(data){		
+	var channel2 = "<?php echo $channelId; ?>:App\\Events\\UpdateUserName";
+	socket.on(channel2, function(data){		
 		displayNewName(data.data);
 	});
-	var channel = "<?php echo $channelId; ?>:App\\Events\\UpdateTypingStatus";
-	socket.on(channel, function(data){		
+	var channel3 = "<?php echo $channelId; ?>:App\\Events\\UpdateTypingStatus";
+	socket.on(channel3, function(data){		
 		displayTypingBar(data.data);
+	});
+	var channel4 = "<?php echo $channelId; ?>:App\\Events\\DeleteMessage";
+	socket.on(channel4, function(data){		
+		removeUserMessage(data.data);
+	});
+	var channel5 = "<?php echo $channelId; ?>:App\\Events\\EditMessage";
+	socket.on(channel5, function(data){		
+		showEditedMessage(data.data);
 	});
 </script>
 <script type="text/javascript" src="{{ URL::asset('js/fingerprint.js') }}"></script>

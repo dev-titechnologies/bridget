@@ -15,14 +15,13 @@ class BridgetComments extends Eloquent
 	protected $dates = ['deleted_at'];
 
 
-	public static function getParents($url,$startFrom,$limit=self::COMMENTLIMIT,$realTimeOffset,$deletedOffset)
+	public static function getParents($url,$limit=self::COMMENTLIMIT,$excludedIds=[])
 	{
 		return self::where('parent_id','=',null)
 		->where('url','=',$url)
-		->where('url','=',$url)
-		->skip(($startFrom*$limit)+$realTimeOffset-$deletedOffset)
+		->whereNotIn('_id',$excludedIds)
 		->orderBy('created_at','desc')
-		->limit(self::COMMENTLIMIT)
+		->limit($limit)
 		->get();
 	}
 
@@ -72,4 +71,11 @@ class BridgetComments extends Eloquent
 			return $count.' Replies';
 		}
 	}
+
+	public static function findCommentById($id)
+	{
+		return self::where('_id','=',$id)->first();
+	}
+
+
 }
