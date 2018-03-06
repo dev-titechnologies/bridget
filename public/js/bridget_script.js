@@ -47,9 +47,9 @@ var domElements=(function(){
 
 var storage=(function(){
     getItem=function(item){
-     return localStorage.getItem(item);
- }
- setItem=function(item,value){
+       return localStorage.getItem(item);
+   }
+   setItem=function(item,value){
     localStorage.setItem(item,value); 
     return true;  
 }
@@ -170,8 +170,8 @@ function ajaxSuccessComment(request)
     });
 
     request.fail(function(jqXHR, textStatus) {
-       console.log( "Request failed: " + textStatus );
-   });
+     console.log( "Request failed: " + textStatus );
+ });
 }
 
 function displayNewMessage(data)
@@ -193,8 +193,10 @@ function displayNewMessage(data)
 function displayNewName(data)
 {
     var commentIds=data.commentIds;
-    for (var key in commentIds) {
-        $('#commentuser-'+commentIds[key]).html(data.username);      
+    if(fingerprint!=data.fingerprint){
+        for (var key in commentIds) {
+            $('#commentuser-'+commentIds[key]).html(data.username);      
+        }
     }
     storage.removeItem('myCommentIds');
 
@@ -240,7 +242,7 @@ function sendMsg(parentId,msg,url,fingerPrint)
 function sendEditedMessage()
 {   
 
-   return $.ajax({
+ return $.ajax({
     url: baseUrl+'/edit-message',
     type: "POST",
     data: {
@@ -326,7 +328,7 @@ function updateDisplayName(comments,username)
 
 function sendTypingProgress(username)
 {
- return $.ajax({
+   return $.ajax({
     url: baseUrl+'/update-typing-status',
     type: "POST",
     data: {
@@ -343,7 +345,7 @@ function sendTypingProgress(username)
 
 function getParentId(ele)
 {
- return $(ele).attr('id').split('-')[1];
+   return $(ele).attr('id').split('-')[1];
 }
 
 function updateScrollbar() {
@@ -356,14 +358,14 @@ function updateScrollbar() {
 
 function disableTextBox()
 {
-   $(domElements.messageTextBox).attr('disabled',true);
-   $(domElements.userReplayInput).attr('disabled',true);
+ $(domElements.messageTextBox).attr('disabled',true);
+ $(domElements.userReplayInput).attr('disabled',true);
 }
 
 function reEnableTextBox()
 {
-   $(domElements.messageTextBox).attr('disabled',false);
-   $(domElements.userReplayInput).attr('disabled',false);
+ $(domElements.messageTextBox).attr('disabled',false);
+ $(domElements.userReplayInput).attr('disabled',false);
 }
 
 function getCsrfToken()
@@ -412,9 +414,9 @@ function removeUserMessage(data)
 
 function updateCommentIds(newCommentId)
 {
-   var oldComment=$(domElements.commentIds).val();
-   var newComment=oldComment?oldComment+','+newCommentId:newCommentId; 
-   $(domElements.commentIds).val(newComment);
+ var oldComment=$(domElements.commentIds).val();
+ var newComment=oldComment?oldComment+','+newCommentId:newCommentId; 
+ $(domElements.commentIds).val(newComment);
 }
 
 function editComment(commentId)
@@ -445,7 +447,37 @@ function cancelEdit()
   $(domElements.editElements).hide();
   $(domElements.addCommentBox).show();
 }
+
+function ajaxSuccessReplay(request,$input)
+{
+   request.done(function(response) { 
+       reEnableTextBox();      
+       $input.val('');
+       $input.parent('div').find(domElements.childComments).append(response.message);
+       $input.parent().parent().find('.see-all-replay').html(response.childCount);
+       if(getUserName()){
+            //
+            $input.focus();
+        }
+
+    });
+
+   request.fail(function(jqXHR, textStatus) {
+      console.log( "Request failed: " + textStatus );
+  }); 
+}
+
+function getUrlVar() {
+    var result = {};
+    var location = window.location.href.split('#');
+    var parts = location[0].replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        result [key] = value;
+    });
+    return result;
+}
+
 (function(){
+
 
     jQuery.each(jQuery('textarea[data-autoresize]'), function() {
         var offset = this.offsetHeight - this.clientHeight;
@@ -454,8 +486,13 @@ function cancelEdit()
 
     if(!storage.getItem('bridget-username')){
         jsonStorage.init(storage.getItem('myCommentIds')); 
-        $(domElements.botResponse).html('What do you think of this?');
-        $(domElements.botContainer).show(); 
+        setTimeout(function(){ 
+
+           $(domElements.botResponse).html('What do you think of this?');
+           $(domElements.botContainer).show(); 
+           updateScrollbar();
+       }, 1000);      
+
     }    
 
     setInterval(function(){  $(domElements.typingBar).remove(); }, 3000);
@@ -464,11 +501,9 @@ function cancelEdit()
 
     updateScrollbar();
 
-    //autosize($(domElements.messageTextBox));
-
     $(document).on('click',domElements.sendMessageBtn,function(){
-       sendNewMessage();
-   })
+     sendNewMessage();
+ })
     //userAction
     $(document).on('click',domElements.userAction,function(){
         $(this).next('ul').toggle();
@@ -501,8 +536,8 @@ function cancelEdit()
     $(document).on('keypress',domElements.messageTextBox,function(){
 
         if(!storage.getItem('bridget-username')){
-           var userName='someone';
-       }else{
+         var userName='someone';
+     }else{
         var userName=storage.getItem('bridget-username');
     }
     if (!$(this).val().trim()) {
@@ -584,114 +619,94 @@ function cancelEdit()
 
         var keycode = (e.keyCode ? e.keyCode : e.which);
         if (keycode == 13 && e.shiftKey) {          
-           e.stopPropagation();
-       }
-       else if(keycode == '13'){
-         var $input=$(this);  
+         e.stopPropagation();
+     }
+     else if(keycode == '13'){
+       var $input=$(this);  
 
-         if(!$input.val().trim()){
-            return;
-        }
-
-        var parentId=getParentId($(this).parent().parent());
-
-
-        var request =sendMsg(parentId,$input.val(),pageUrl,fingerprint);
-
-        ajaxSuccessReplay(request,$input);
-
-
+       if(!$input.val().trim()){
+        return;
     }
+
+    var parentId=getParentId($(this).parent().parent());
+
+
+    var request =sendMsg(parentId,$input.val(),pageUrl,fingerprint);
+
+    ajaxSuccessReplay(request,$input);
+
+
+}
 });
 
-    function ajaxSuccessReplay(request,$input)
-    {
-       request.done(function(response) { 
-           reEnableTextBox();      
-           $input.val('');
-           $input.parent('div').find(domElements.childComments).append(response.message);
-           $input.parent().parent().find('.see-all-replay').html(response.childCount);
-           if(getUserName()){
-            //
-            $input.focus();
-        }
-
+    $(document).on('click',domElements.anonymousPostBtn,function(e){
+        localStorage.setItem('bridget-username','Anonymous');
+        updateUserName('Anonymous');
+        $(domElements.botContainer).hide();
+        reEnableTextBox();
     });
 
-       request.fail(function(jqXHR, textStatus) {
-          console.log( "Request failed: " + textStatus );
-      }); 
-   }
-
-
-   $(document).on('click',domElements.anonymousPostBtn,function(e){
-    localStorage.setItem('bridget-username','Anonymous');
-    updateUserName('Anonymous');
-    $(domElements.botContainer).hide();
-    reEnableTextBox();
-});
-
-   $(document).on('click',domElements.seeAllReplays,function(e){
-    var ele=$(this);
-    var parentDiv=$(ele).parent().parent();
-    var request =showChildComments(getParentId($(parentDiv)));
-    bridgetLoader.init($(ele));
-    request.done(function(response) {
-        bridgetLoader.end();  
-        if($(parentDiv).is(':last-child')){
-            updateScrollbar();
-        }
-        $(parentDiv).find(domElements.childCommentContainer).html(response.view);
-        $(parentDiv).find(domElements.childCommentContainer).show();
-        $(ele).hide();
-        $(ele).next('div').show();
-        $(parentDiv).find(domElements.userReplayInput).focus();
-    });
-
-    request.fail(function(jqXHR, textStatus) {
-      console.log( "Request failed: " + textStatus );
-  });
-
-});
-   $(document).on('click',domElements.hideAllReplay,function(e){
-    $(this).hide();
-    $(this).prev('div').show();
-    var parentDiv=$(this).parent().parent();;
-    $(parentDiv).find(domElements.childCommentContainer).hide();
-});
-
-   $(document).on('click',domElements.loadPreviousComment,function(e){  
-    e.preventDefault();
-    var ele=$(this);  
-    bridgetLoader.init($(ele));    
-    loadPreviousComment($(domElements.commentIds).val()).done(function(response){ 
-        if(response.success){ 
+    $(document).on('click',domElements.seeAllReplays,function(e){
+        var ele=$(this);
+        var parentDiv=$(ele).parent().parent();
+        var request =showChildComments(getParentId($(parentDiv)));
+        bridgetLoader.init($(ele));
+        request.done(function(response) {
             bridgetLoader.end();  
-            $(domElements.commentIds).val(response.commentIds);
-            $(domElements.chatContainer).prepend(response.comments); 
-            if(!response.showLoadMore){
-                $(domElements.loadPreviousComment).hide();            
+            if($(parentDiv).is(':last-child')){
+                updateScrollbar();
             }
-        }
+            $(parentDiv).find(domElements.childCommentContainer).html(response.view);
+            $(parentDiv).find(domElements.childCommentContainer).show();
+            $(ele).hide();
+            $(ele).next('div').show();
+            $(parentDiv).find(domElements.userReplayInput).focus();
+        });
+
+        request.fail(function(jqXHR, textStatus) {
+          console.log( "Request failed: " + textStatus );
+      });
+
     });
-})
+    $(document).on('click',domElements.hideAllReplay,function(e){
+        $(this).hide();
+        $(this).prev('div').show();
+        var parentDiv=$(this).parent().parent();;
+        $(parentDiv).find(domElements.childCommentContainer).hide();
+    });
 
-   $(document).on('click',domElements.cancelEdit,function(e){  
-     cancelEdit();
- });
+    $(document).on('click',domElements.loadPreviousComment,function(e){  
+        e.preventDefault();
+        var ele=$(this);  
+        bridgetLoader.init($(ele));    
+        loadPreviousComment($(domElements.commentIds).val()).done(function(response){ 
+            if(response.success){ 
+                bridgetLoader.end();  
+                $(domElements.commentIds).val(response.commentIds);
+                $(domElements.chatContainer).prepend(response.comments); 
+                if(!response.showLoadMore){
+                    $(domElements.loadPreviousComment).hide();            
+                }
+            }
+        });
+    });
 
-   $(document).on('click','.cancel-edit-reply',function(e){  
-     $(this).parents('.child_comment_container').find('.user-replay').show();
-     $(this).parents('.child_comment_container').find('.user-edit-replay').hide();
-     $(this).parents('.child_comment_container').find('.cancel-edit-reply').hide();
- });
+    $(document).on('click',domElements.cancelEdit,function(e){  
+       cancelEdit();
+   });
 
-   $(document).on('click',domElements.editMyReply,function(e){
-    $(this).parents('.child_comment_container').find('.user-edit-replay').show();
-    $(this).parents('.child_comment_container').find('.cancel-edit-reply').show();
-    $(this).parents('.child_comment_container').find('.user-replay').hide();
-    $(this).parents('.child_comment_container').find('.old-reply-id').val($(this).data('pk'));
-    $(this).parents('.child_comment_container').find('.user-edit-replay').val($('#reply-'+$(this).data('pk')).find('.comment-reply').html());
-});
+    $(document).on('click','.cancel-edit-reply',function(e){  
+       $(this).parents('.child_comment_container').find('.user-replay').show();
+       $(this).parents('.child_comment_container').find('.user-edit-replay').hide();
+       $(this).parents('.child_comment_container').find('.cancel-edit-reply').hide();
+   });
+
+    $(document).on('click',domElements.editMyReply,function(e){
+        $(this).parents('.child_comment_container').find('.user-edit-replay').show();
+        $(this).parents('.child_comment_container').find('.cancel-edit-reply').show();
+        $(this).parents('.child_comment_container').find('.user-replay').hide();
+        $(this).parents('.child_comment_container').find('.old-reply-id').val($(this).data('pk'));
+        $(this).parents('.child_comment_container').find('.user-edit-replay').val($('#reply-'+$(this).data('pk')).find('.comment-reply').html());
+    });
 
 })();

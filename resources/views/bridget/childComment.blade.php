@@ -1,4 +1,3 @@
-
 <div id="reply-{{$comment->_id}}">
 	<b>{{$comment->browser_fingerprint==Session::get('fingerPrint')?'Me':$comment->username}}:</b> <span class="comment-reply"><?php echo nl2br($comment->comment); ?></span>
 	<br>

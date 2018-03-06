@@ -125,7 +125,8 @@ class BridgetController extends Controller
 
 		$commentData=array(
 			'username'=>$username,
-			'commentIds'=>$comments
+			'commentIds'=>$comments,
+			'fingerprint'=>Session::get('fingerPrint')
 			);
 
 		event(new \App\Events\UpdateUserName($commentData,$channel->_id));
