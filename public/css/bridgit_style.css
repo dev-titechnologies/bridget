@@ -789,10 +789,10 @@ textarea:focus, input:focus{
 .cancel-edit-reply{
  text-align: right;
  float: right;
- margin-top: -19px;
+ margin-top: -12px;
 }
 .cancel-edit{
-  display: inline;
+  display: none;
   padding: 0 20px;
   font-size: 11px;
   text-align: right;
