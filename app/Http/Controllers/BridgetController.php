@@ -195,10 +195,21 @@ class BridgetController extends Controller
 				$comment->comment=$newComment;
 				$comment->isEdited=true;
 				$comment->save();
-				$commentData=array('commentId'=>$comment->_id,'newComment'=>$newComment);
+				$commentData=array('commentId'=>$comment->_id,'newComment'=>nl2br($comment->comment));
 				event(new \App\Events\EditMessage($commentData,$channel->_id));
-				return response()->json(['success'=>true]);
+				return response()->json(['success'=>true,'newComment'=>nl2br($comment->comment)]);
 			}
+		}else{
+			return response()->json(['success'=>false,'msg'=>'failed to load the resource']);
+		}
+	}
+
+	public function originalMessage(Request $request)
+	{
+		$id=$request->input('_id');
+		$comment=BridgetComments::findCommentById($id);
+		if($comment){
+			return response()->json(['success'=>true,'comment'=>$comment->comment]);
 		}else{
 			return response()->json(['success'=>false,'msg'=>'failed to load the resource']);
 		}

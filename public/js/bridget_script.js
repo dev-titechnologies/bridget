@@ -419,16 +419,33 @@ function updateCommentIds(newCommentId)
  $(domElements.commentIds).val(newComment);
 }
 
+function getOriginalComment(commentId)
+{
+ return $.ajax({
+    url: baseUrl+'/original-message',
+    type: "POST",
+    data: { 
+        '_token': getCsrfToken(),           
+        '_id':commentId
+    },
+    dataType: "json",
+    beforeSend:function(){
+
+    }
+}); 
+}
+
 function editComment(commentId)
-{    
-    var originalComment=$('#comment-'+commentId).find('.user-comment').html();
+{
+   getOriginalComment(commentId).done(function(response) {     
     $(domElements.addCommentBox).hide();
     $(domElements.editElements).show();
-    $(domElements.editCommentBox).val(originalComment);
+    $(domElements.editCommentBox).val(response.comment);
     var offset = $(domElements.editCommentBox).offsetHeight - $(domElements.editCommentBox).clientHeight;
 
     resizeTextarea($(domElements.editCommentBox),offset);
     $(domElements.editCommentBox).keyup();
+});
 }
 function showEditedMessage(data)
 {
@@ -606,7 +623,7 @@ function getUrlVar() {
             sendEditedReply(commentId,comment)
             .done(function(response){
                 reEnableTextBox();
-                $('#reply-'+commentId).find('.comment-reply').html(comment+'<br/><span class="edited-comment">Edited</span>');
+                $('#reply-'+commentId).find('.comment-reply').html(response.newComment+'<br/><span class="edited-comment">Edited</span>');
                 $(ele).parents('.child_comment_container').find('.user-replay').show();
                 $(ele).parents('.child_comment_container').find('.user-edit-replay').hide();
                 $(ele).parents('.child_comment_container').find('.cancel-edit-reply').hide();
@@ -702,11 +719,14 @@ function getUrlVar() {
    });
 
     $(document).on('click',domElements.editMyReply,function(e){
-        $(this).parents('.child_comment_container').find('.user-edit-replay').show();
-        $(this).parents('.child_comment_container').find('.cancel-edit-reply').show();
-        $(this).parents('.child_comment_container').find('.user-replay').hide();
-        $(this).parents('.child_comment_container').find('.old-reply-id').val($(this).data('pk'));
-        $(this).parents('.child_comment_container').find('.user-edit-replay').val($('#reply-'+$(this).data('pk')).find('.comment-reply').html());
+        var ele=$(this);
+        getOriginalComment($(this).data('pk')).done(function(response) {   
+            $(ele).parents('.child_comment_container').find('.user-edit-replay').show();
+            $(ele).parents('.child_comment_container').find('.cancel-edit-reply').show();
+            $(ele).parents('.child_comment_container').find('.user-replay').hide();
+            $(ele).parents('.child_comment_container').find('.old-reply-id').val($(ele).data('pk'));
+            $(ele).parents('.child_comment_container').find('.user-edit-replay').val(response.comment);
+        });
     });
 
 })();

@@ -29,6 +29,7 @@ Route::post('update-display-name', 'BridgetController@updateDisplayName');
 Route::post('update-typing-status', 'BridgetController@updateTypingStatus');
 Route::post('delete-my-comment', 'BridgetController@deleteUserMessage');
 Route::post('edit-message', 'BridgetController@editUserMessage');
+Route::post('original-message', 'BridgetController@originalMessage');
 Route::get('refresh-csrf', function(){
 	return csrf_token();
 });
