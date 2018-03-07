@@ -15,22 +15,24 @@ use App\BridgetComments;
 				
 				<a href="#" class="load-previous-comments">Load Prevous Comments</a>
 				@endif
-				<div class="chat-content">
+				<div id="scroll-container">
+					<div class="chat-content">
 
-					@include('bridget.parentComments',['comments' => $parentComments])
+						@include('bridget.parentComments',['comments' => $parentComments])
 
-				</div>
-
-				<div class="message bot">
-					<figure class="avatar">
-						<img src="img/bot.png">
-					</figure>
-					<div  class="bot-response">
-						
 					</div>
-				</div>
 
-				<input type="hidden" id="comment-ids" value="{{$commentIds}}">
+					<div class="message bot">
+						<figure class="avatar">
+							<img src="img/bot.png">
+						</figure>
+						<div  class="bot-response">
+
+						</div>
+					</div>
+
+					<input type="hidden" id="comment-ids" value="{{$commentIds}}">
+				</div>
 			</div> 
 
 		</div>

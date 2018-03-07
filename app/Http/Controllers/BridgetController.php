@@ -191,13 +191,13 @@ class BridgetController extends Controller
 			if($sessionFingerPrint!=$commentFingerPrint){
 				return response()->json(['success'=>false,'msg'=>'You are not allowed to perform this action']);
 			}else{	
-				
+				$isAlreadyEdited=isset($comment->isEdited)?true:false;
 				$comment->comment=$newComment;
 				$comment->isEdited=true;
 				$comment->save();
-				$commentData=array('commentId'=>$comment->_id,'newComment'=>nl2br($comment->comment));
+				$commentData=array('commentId'=>$comment->_id,'newComment'=>nl2br($comment->comment),'isAlreadyEdited'=> $isAlreadyEdited);
 				event(new \App\Events\EditMessage($commentData,$channel->_id));
-				return response()->json(['success'=>true,'newComment'=>nl2br($comment->comment)]);
+				return response()->json(['success'=>true,'newComment'=>nl2br($comment->comment),'isAlreadyEdited'=>$isAlreadyEdited]);
 			}
 		}else{
 			return response()->json(['success'=>false,'msg'=>'failed to load the resource']);

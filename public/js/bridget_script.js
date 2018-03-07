@@ -107,6 +107,14 @@ var jsonStorage=(function(){
 
 })();
 
+
+$.fn.focusToEnd = function() {
+   return this.each(function() {
+       var v = $(this).val();
+       $(this).focus().val("").val(v);
+   });
+};
+
 function typingHtml()
 {
 
@@ -175,8 +183,7 @@ function ajaxSuccessComment(request)
 }
 
 function displayNewMessage(data)
-{    
-
+{  
     $(domElements.typingBar).remove();
     $(domElements.noComments).hide();
     $(domElements.chatContainer).append(data.message); 
@@ -187,6 +194,7 @@ function displayNewMessage(data)
     }
     updateCommentIds(data.commentId);
     $(domElements.messageTextBox).val('');
+    //$(domElements.messageTextBox).keyup();
     updateScrollbar();
 }
 
@@ -349,11 +357,16 @@ function getParentId(ele)
 }
 
 function updateScrollbar() {
-    console.log('fired');
-    $(domElements.messagesContainer).mCustomScrollbar("update").mCustomScrollbar('scrollTo', 'bottom', {
-        scrollInertia: 10,
-        timeout: 0
-    });
+/*    console.log('fired');
+    var container =$('#scroll-container');
+    container.slimScroll({
+      scrollTo: container[0].scrollHeight
+  });*/
+  console.log('fired');
+  $(domElements.messagesContainer).mCustomScrollbar("update").mCustomScrollbar('scrollTo', 'bottom', {
+    scrollInertia: 10,
+    timeout: 0
+});
 }
 
 function disableTextBox()
@@ -441,15 +454,17 @@ function editComment(commentId)
     $(domElements.addCommentBox).hide();
     $(domElements.editElements).show();
     $(domElements.editCommentBox).val(response.comment);
+    $(domElements.editCommentBox).focusToEnd();
     var offset = $(domElements.editCommentBox).offsetHeight - $(domElements.editCommentBox).clientHeight;
 
-    resizeTextarea($(domElements.editCommentBox),offset);
+    //resizeTextarea($(domElements.editCommentBox),offset);
     $(domElements.editCommentBox).keyup();
 });
 }
 function showEditedMessage(data)
-{
-    $('#comment-'+data.commentId).find('.user-comment').html(data.newComment+'<br/><span class="edited-comment">Edited</span>');
+{    
+    $('#comment-'+data.commentId).find('.user-comment').html(data.newComment);
+    $('#comment-'+data.commentId).find('.edited-comment').html('Edited');
     cancelEdit();
     reEnableTextBox();
 }
@@ -493,8 +508,8 @@ function getUrlVar() {
     return result;
 }
 
-(function(){
 
+(function(){
 
     jQuery.each(jQuery('textarea[data-autoresize]'), function() {
         var offset = this.offsetHeight - this.clientHeight;
@@ -623,7 +638,8 @@ function getUrlVar() {
             sendEditedReply(commentId,comment)
             .done(function(response){
                 reEnableTextBox();
-                $('#reply-'+commentId).find('.comment-reply').html(response.newComment+'<br/><span class="edited-comment">Edited</span>');
+                $('#reply-'+commentId).find('.comment-reply').html(response.newComment);
+                $('#reply-'+commentId).find('.edited-comment').html('Edited');
                 $(ele).parents('.child_comment_container').find('.user-replay').show();
                 $(ele).parents('.child_comment_container').find('.user-edit-replay').hide();
                 $(ele).parents('.child_comment_container').find('.cancel-edit-reply').hide();
@@ -726,6 +742,7 @@ function getUrlVar() {
             $(ele).parents('.child_comment_container').find('.user-replay').hide();
             $(ele).parents('.child_comment_container').find('.old-reply-id').val($(ele).data('pk'));
             $(ele).parents('.child_comment_container').find('.user-edit-replay').val(response.comment);
+            $(ele).parents('.child_comment_container').find('.user-edit-replay').focusToEnd();
         });
     });
 

@@ -11,11 +11,14 @@ use App\BridgetComments;
 			<li><a href="#"><i class="fa fa-trash-o"></i><span class="delete-my-comment" title="Delete" data-pk="{{$comment->_id}}">Delete</span></a></li>			
 		</ul>
 		@endif
-		<b><span id="commentuser-{{$comment->_id}}">{{ $comment->browser_fingerprint==Session::get('fingerPrint')?'me':$comment->username }} </span></b>:<span class="user-comment"><?php echo nl2br($comment->comment); ?></span>
-		@if($comment->isEdited)
+		<b><span id="commentuser-{{$comment->_id}}">{{ $comment->browser_fingerprint==Session::get('fingerPrint')?'me':$comment->username }} </span></b>:<span class="user-comment"><?php echo nl2br($comment->comment); ?></span>			
 		<br/>
-		<span class="edited-comment">Edited</span>
-		@endif
+		<span class="edited-comment">@if($comment->isEdited)
+			Edited 
+			@endif
+		</span>
+
+
 		<div class="timestamp commentlink see-all-replay cursor_pointer">
 
 			{{BridgetComments::numberOfReply($comment->_id)}}
