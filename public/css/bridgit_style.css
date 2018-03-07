@@ -701,6 +701,7 @@ textarea:focus, input:focus{
   position: absolute;
   left:10px;
   top:0px;
+  height: 40px;
 }
 .messages ul{
   position: absolute;
