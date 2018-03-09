@@ -190,7 +190,7 @@ function displayNewMessage(data)
     if(fingerprint!=data.commentFingerPrint){
         $('#commentuser-'+data.commentId).html(data.username);
         $('#comment-'+data.commentId).find('.message').removeClass('message-personal');
-        $('#comment-'+data.commentId).find('.delete-my-comment').remove();
+        $('#comment-'+data.commentId).find('.user-action').remove();
     }
     updateCommentIds(data.commentId);
     $(domElements.messageTextBox).val('');
