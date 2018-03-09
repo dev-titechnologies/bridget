@@ -64,7 +64,7 @@ class BridgetComments extends Eloquent
 	{
 		$count=self::getChildrensCount($parentId);
 		if($count==0){
-			return 'Add reply';
+			return 'Reply';
 		}elseif($count==1){
 			return '1 Reply';
 		}else{
