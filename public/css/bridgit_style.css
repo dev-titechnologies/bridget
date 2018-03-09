@@ -825,4 +825,6 @@ textarea:focus, input:focus{
   font-size: 12px;
   color: #ccc;
 }
-
+.user-comment{
+  margin-right:15px;
+}
