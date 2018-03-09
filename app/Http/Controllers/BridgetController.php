@@ -12,16 +12,9 @@ class BridgetController extends Controller
 
 
 	public function getMessages(Request $request)
-	{
-		
+	{		
 		$pageNumber=$request->input('page_num')?$request->input('page_num'):0;
 		$param = $request->input('bridget_url');
-
-		if (!Session::has('fingerPrint')){
-			$fingerprint=$request->input('fingerPrint');
-			session()->put('fingerPrint', $fingerprint);
-		}
-
 		$excludedIds=$request->input('excluded_ids')?explode(',',$request->input('excluded_ids')):[];
 		$parentComments=BridgetComments::getParents($param,BridgetComments::COMMENTLIMIT,$excludedIds);
 
@@ -43,6 +36,7 @@ class BridgetController extends Controller
 		$commentIds=rtrim($commentIds,',');
 
 		if($request->ajax()){
+
 			$countParentComments=count($parentComments);
 			$showLoadMore=$countParentComments>=BridgetComments::COMMENTLIMIT?true:false;
 			$comments = view("bridget.parentComments",
@@ -51,11 +45,13 @@ class BridgetController extends Controller
 				])->render();
 			return response()->json(['count'=>$countParentComments,'success'=>true,'comments'=>$comments,'showLoadMore'=>$showLoadMore,'commentIds'=>$commentIds]);
 		}else{
+			$fingerPrint=$request->input('fingerPrint');
 			return view("bridget.messages", [
 				"param"=>$param,
 				"parentComments"=>$parentComments,
 				'channelId'=>$url->_id,
-				'commentIds'=>$commentIds
+				'commentIds'=>$commentIds,
+				'fingerPrint'=>$fingerPrint
 				]);	
 		}
 
@@ -69,7 +65,7 @@ class BridgetController extends Controller
 		$parentId=$request->input('parent_id');
 		$url=$request->input('url');
 		$channel=BridgetUrl::getId($url);
-		$browserFingerPrint=Session::get('fingerPrint');
+		$browserFingerPrint=BridgetComments::getFingerPrint();
 		$userName=$request->input('username');
 		$comment=BridgetComments::addMessage($comment,$parentId,$url,$browserFingerPrint,$userName);
 		$childCount=false;
@@ -106,7 +102,7 @@ class BridgetController extends Controller
 	{
 		
 		$username=$request->input('username');
-		$browserFingerPrint=Session::get('fingerPrint');
+		$browserFingerPrint=BridgetComments::getFingerPrint();
 		if(BridgetComments::updateCommentByFingerPrint($browserFingerPrint,$username))
 		{			
 			return response()->json(['success'=>true]);
@@ -126,7 +122,7 @@ class BridgetController extends Controller
 		$commentData=array(
 			'username'=>$username,
 			'commentIds'=>$comments,
-			'fingerprint'=>Session::get('fingerPrint')
+			'fingerprint'=>BridgetComments::getFingerPrint()
 			);
 
 		event(new \App\Events\UpdateUserName($commentData,$channel->_id));
@@ -140,7 +136,7 @@ class BridgetController extends Controller
 
 		$commentData=array(
 			'username'=>$username,
-			'fingerprint'=>Session::get('fingerPrint')
+			'fingerprint'=>BridgetComments::getFingerPrint()
 			);
 
 		event(new \App\Events\UpdateTypingStatus($commentData,$channel->_id));
@@ -154,7 +150,7 @@ class BridgetController extends Controller
 		$channel=BridgetUrl::getId($bridgetUrl);
 		$comment=BridgetComments::findCommentById($id);
 		if($comment){
-			$sessionFingerPrint=Session::get('fingerPrint');
+			$sessionFingerPrint=BridgetComments::getFingerPrint();
 			$commentFingerPrint=$comment->browser_fingerprint;
 
 			if($sessionFingerPrint!=$commentFingerPrint){
@@ -185,7 +181,7 @@ class BridgetController extends Controller
 		$channel=BridgetUrl::getId($bridgetUrl);
 		$comment=BridgetComments::findCommentById($id);
 		if($comment){
-			$sessionFingerPrint=Session::get('fingerPrint');
+			$sessionFingerPrint=BridgetComments::getFingerPrint();
 			$commentFingerPrint=$comment->browser_fingerprint;
 
 			if($sessionFingerPrint!=$commentFingerPrint){

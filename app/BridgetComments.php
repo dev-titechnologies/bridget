@@ -77,5 +77,11 @@ class BridgetComments extends Eloquent
 		return self::where('_id','=',$id)->first();
 	}
 
+	public static function getFingerPrint()
+	{
+
+		return request()->header('x-fingerprint')?request()->header('x-fingerprint'):request()->fingerPrint;
+	}
+
 
 }

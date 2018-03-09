@@ -38,7 +38,7 @@ use App\BridgetComments;
 		</div>
 		
 		<div class="message-box">
-			<textarea class="message-input comment-box add-comment-box" placeholder="Add a comment..." data-autoresize></textarea>
+			<textarea class="message-input comment-box add-comment-box" placeholder="What do you think?" data-autoresize></textarea>
 			<input type="hidden" id="old-comment-id">
 			<textarea class="message-input edit-comment-box edit-ele" data-autoresize></textarea>			
 			<button type="submit" class="message-submit" id="sendMessage">Send</button>	
@@ -76,7 +76,10 @@ use App\BridgetComments;
 <script type="text/javascript" src="{{ URL::asset('js/fingerprint.js') }}"></script>
 <script>
 	var pageUrl="<?php echo $param; ?>";
-	var fingerprint = "<?php echo Session::get('fingerPrint');?>";
+	var fingerprint = "<?php echo $fingerPrint;?>";
+	$.ajaxSetup({
+		headers: { 'x-fingerprint': fingerprint }
+	});
 </script>
 <script type="text/javascript" src="{{ URL::asset('js/bridget_script.js') }}"></script>
 @stop

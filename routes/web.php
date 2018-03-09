@@ -19,8 +19,7 @@ Route::get('/', function () {
 Route::get('/docs', function () {
 	dd('<div id="bridget_container"></div> <script src="http://ec2-54-252-171-131.ap-southeast-2.compute.amazonaws.com/js/bridget_maybe.js"></script>');
 });
-
-Route::get('bridget', 'BridgetController@getMessages');
+Route::match(['get', 'post'],'bridget','BridgetController@getMessages');
 Route::get('seeder', 'BridgetController@index');
 Route::post('add-message', 'BridgetController@addMessage');
 Route::post('child-comments', 'BridgetController@childComments');

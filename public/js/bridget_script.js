@@ -141,7 +141,7 @@ function userNameFormHtml()
 function displayTypingBar(data)
 {
     $(domElements.typingBar).remove();
-    if(fingerprint!=data.fingerprint){
+    if(fingerprint!=data.fingerprint){      
         $(domElements.chatContainer).append(typingHtml());
         $(domElements.typingUser).html(data.username+" "+"is typing..");
         updateScrollbar();
@@ -357,12 +357,6 @@ function getParentId(ele)
 }
 
 function updateScrollbar() {
-/*    console.log('fired');
-    var container =$('#scroll-container');
-    container.slimScroll({
-      scrollTo: container[0].scrollHeight
-  });*/
-  console.log('fired');
   $(domElements.messagesContainer).mCustomScrollbar("update").mCustomScrollbar('scrollTo', 'bottom', {
     scrollInertia: 10,
     timeout: 0
@@ -390,8 +384,9 @@ function loadPreviousComment(excludedid)
 {
     return $.ajax({
         url: baseUrl+'/bridget',
-        type: "GET",
-        data: {           
+        type: "POST",
+        data: {  
+            '_token': getCsrfToken(),         
             'bridget_url':pageUrl,
             'excluded_ids':excludedid
         },
@@ -527,7 +522,7 @@ function getUrlVar() {
 
     }    
 
-    setInterval(function(){  $(domElements.typingBar).remove(); }, 3000);
+    setInterval(function(){  $(domElements.typingBar).remove(); }, 1000);
 
     $(domElements.messagesContainer).mCustomScrollbar();
 
@@ -537,7 +532,8 @@ function getUrlVar() {
      $(domElements.addCommentBox).is(":visible")?sendNewMessage():sendEditedMessage();
  })
     //userAction
-    $(document).on('click',domElements.userAction,function(){
+    $(document).on('click',domElements.userAction,function(event){
+        event.stopPropagation();
         $(this).next('ul').toggle();
     })
 
@@ -692,7 +688,6 @@ function getUrlVar() {
             $(parentDiv).find(domElements.childCommentContainer).html(response.view);
             $(parentDiv).find(domElements.childCommentContainer).show();
             $(ele).hide();
-            $(ele).next('div').show();
             $(parentDiv).find(domElements.userReplayInput).focus();
         });
 
@@ -746,5 +741,10 @@ function getUrlVar() {
             $(ele).parents('.child_comment_container').find('.user-edit-replay').keyup();
         });
     });
+
+    $(window).click(function() {
+        $('.user-action').next('ul').hide();
+    });
+
 
 })();

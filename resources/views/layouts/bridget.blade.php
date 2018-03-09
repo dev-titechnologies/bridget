@@ -30,6 +30,6 @@
 	  		$('[name="csrf-token"]').attr("content", csrfToken);
 	  	});
 	  }
-	</script>
+</script>
 
 	</html>

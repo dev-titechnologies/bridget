@@ -3,15 +3,16 @@ use App\BridgetComments;
 ?>
 
 <div id="comment-{{$comment->_id}}">
-	<div class="message new {{ $comment->browser_fingerprint==Session::get('fingerPrint')?'message-personal':'' }}">
-		@if($comment->browser_fingerprint==Session::get('fingerPrint'))		
+	<div class="message new {{ $comment->browser_fingerprint==BridgetComments::getFingerPrint()?'message-personal':'' }}">
+
+		<b><span id="commentuser-{{$comment->_id}}">{{ $comment->browser_fingerprint==BridgetComments::getFingerPrint()?'me':$comment->username }} </span></b>:<span class="user-comment"><?php echo nl2br($comment->comment); ?></span>
+		@if($comment->browser_fingerprint==BridgetComments::getFingerPrint())		
 		<span class="user-action cursor_pointer">...</span>
 		<ul style="display: none;">
 			<li><a href="#"><i class="fa fa-edit"></i><span class="edit-my-comment" title="Edit" data-pk="{{$comment->_id}}">Edit</span></a></li>
 			<li><a href="#"><i class="fa fa-trash-o"></i><span class="delete-my-comment" title="Delete" data-pk="{{$comment->_id}}">Delete</span></a></li>			
 		</ul>
-		@endif
-		<b><span id="commentuser-{{$comment->_id}}">{{ $comment->browser_fingerprint==Session::get('fingerPrint')?'me':$comment->username }} </span></b>:<span class="user-comment"><?php echo nl2br($comment->comment); ?></span>			
+		@endif			
 		<br/>
 		<span class="edited-comment">@if($comment->isEdited)
 			Edited 

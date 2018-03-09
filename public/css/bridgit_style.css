@@ -120,7 +120,7 @@ Messages
 
 .messages .message.message-personal {
   float: right;
-  text-align: right;
+  text-align: left;
   background: #fff;
   border: 1px solid #ccc;
   -webkit-border-radius: 13px 13px 0 13px;
@@ -698,42 +698,64 @@ textarea:focus, input:focus{
 }
 
 .messages .user-action{
-  position: absolute;
-  left:10px;
-  top:0px;
-  height: 40px;
+ position: absolute;
+ right: 15px;
+ top: 0px;
+ height: 40px;
 }
 .messages ul{
   position: absolute;
-  left: 5px;
-  top:10px;
-  width:75px;
+  right: 5px;
+  top: 10px;
+  width: 75px;
   height: auto;
-  border:1px solid #ccc;
-  border-radius:10px;
-  background:#fff;
+  border: 1px solid #ccc;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  background: #fff;
   list-style: none;
-  padding: 1px 0px;
-  z-index: 100;
-  -webkit-box-shadow: 1px 3px 4px 1px #f1f1f1;  /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
-  -moz-box-shadow:    1px 3px 4px 1px #f1f1f1;  /* Firefox 3.5 - 3.6 */
-  box-shadow:         1px 3px 4px 1px #f1f1f1; 
+  padding: 0px 0px;
+  z-index: 100000000000000000000;
+  -webkit-box-shadow: 1px 3px 4px 1px #f1f1f1;
+  -moz-box-shadow: 1px 3px 4px 1px #f1f1f1;
+  box-shadow: 1px 3px 4px 1px #f1f1f1;
 }
 .messages ul li{
-  width:100%;
+  width: 100%;
   float: left;
-  height:auto;
+  height: 25px;
   text-align: left;
-  padding: 1px 5px;
+  padding: 1px auto;
+  padding: 2px 5px;
+  border-bottom: 1px solid #cccccc;
+}
+.messages ul li:first-child{
+  -webkit-border-radius:10px 10px 0px 0px;
+  -moz-border-radius:10px 10px 0px 0px;
+  border-radius:10px 10px 0px 0px;
+}
+
+.messages ul li:last-child{
+  -webkit-border-radius:0px 0px 10px 10px;
+  -moz-border-radius:0px 0px 10px 10px;
+  border-radius:0px 0px 10px 10px;
+  border-bottom: none;
+
+}
+.messages ul li:hover{
+
+  background-color:#cccccc;
 }
 .messages ul li a{
   color:#555;
   text-decoration: none;
   font-size:12px;
+  width:100%;
 }
 .messages ul li a i{ padding-right: 3px; }
 .messages ul li a:hover{
-  color:#b53d3d;
+
 }
 
 @media (max-device-width: 667px) {
@@ -803,3 +825,4 @@ textarea:focus, input:focus{
   font-size: 12px;
   color: #ccc;
 }
+
