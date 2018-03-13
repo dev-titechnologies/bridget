@@ -17,7 +17,6 @@ class BridgetController extends Controller
 		$param = $request->input('bridget_url');
 		$excludedIds=$request->input('excluded_ids')?explode(',',$request->input('excluded_ids')):[];
 		$parentComments=BridgetComments::getParents($param,BridgetComments::COMMENTLIMIT,$excludedIds);
-
 		if(!BridgetUrl::isUrlExist($param)){
 			BridgetUrl::addUrl($param);
 		}

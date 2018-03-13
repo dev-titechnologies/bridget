@@ -1,6 +1,6 @@
 var selectedElement=null;
 var deleteMsgCount=0;
-
+var currentTime=new Date().getTime();
 
 var domElements=(function(){
     return {  
@@ -47,9 +47,9 @@ var domElements=(function(){
 
 var storage=(function(){
     getItem=function(item){
-       return localStorage.getItem(item);
-   }
-   setItem=function(item,value){
+     return localStorage.getItem(item);
+ }
+ setItem=function(item,value){
     localStorage.setItem(item,value); 
     return true;  
 }
@@ -109,25 +109,64 @@ var jsonStorage=(function(){
 
 
 $.fn.focusToEnd = function() {
- return this.each(function() {
-     var v = $(this).val();
-     $(this).focus().val("").val(v);
- });
+   return this.each(function() {
+       var v = $(this).val();
+       $(this).focus().val("").val(v);
+   });
 };
 
-function typingHtml()
-{
-
-
-    return '<div class="message loading" id="typing-bar">'+
-    '<div class="typing-user"></div>'+
-    '<figure class="avatar">'+
-    '<img src="http://www.fsirbike.com/images/anonymous-user.png">'+
-    '</figure>'+
-    '<span>'+
-    '</span>'+
-    '</div>';
+var typingMsg=(function(){
+    var uniqueUsers=[];
+    var users=[];
+    init=function(){        
+        var msg= '<div class="message loading" id="typing-bar">'+
+        '<div class="typing-user">'+
+        '<div class="typed-user"></div>'+
+        '<div class="type-msg"></div>'+
+        '</div>'+        
+        '<figure class="avatar">'+
+        '<img src="http://www.fsirbike.com/images/anonymous-user.png">'+
+        '</figure>'+
+        '<span>'+
+        '</span>'+
+        '</div>';
+        if(!$(domElements.typingBar).length){            
+           $(domElements.chatContainer).append(msg);
+       }
+   }
+   removeTypingMsg=function(){
+    users=[];
+    $(domElements.typingBar).remove();
 }
+showTypingUser=function(user){
+    users.push(user);
+    uniqueUsers = users.filter(function(item, i, ar){ return ar.indexOf(item) === i; });
+    $('.typed-user').html(uniqueUsers.toString()+'&nbsp');
+    $('.type-msg').html("is typing...");
+}
+return {
+    init:init,
+    removeTypingMsg:removeTypingMsg,
+    showTypingUser:showTypingUser
+}
+})();
+
+var Bridgit=(function(){
+
+    init=function(){
+
+    }
+    botResponse=function(){
+        $(domElements.botResponse).html('What do you think of this?');
+        $(domElements.botContainer).show();
+    }
+    return {
+        init:init,
+        botResponse:botResponse
+    }
+
+})();
+
 
 function userNameFormHtml()
 {
@@ -139,11 +178,11 @@ function userNameFormHtml()
 
 
 function displayTypingBar(data)
-{
-    $(domElements.typingBar).remove();
+{    
+    typingMsg.removeTypingMsg();
     if(fingerprint!=data.fingerprint){      
-        $(domElements.chatContainer).append(typingHtml());
-        $(domElements.typingUser).html(data.username+" "+"is typing..");
+        $(domElements.chatContainer).append(typingMsg.init());
+        typingMsg.showTypingUser(data.username);
         updateScrollbar();
     }
 }
@@ -178,22 +217,24 @@ function ajaxSuccessComment(request)
     });
 
     request.fail(function(jqXHR, textStatus) {
-     console.log( "Request failed: " + textStatus );
- });
+       console.log( "Request failed: " + textStatus );
+   });
 }
 
 function displayNewMessage(data)
 {  
-    $(domElements.typingBar).remove();
+    typingMsg.removeTypingMsg();
     $(domElements.noComments).hide();
     $(domElements.chatContainer).append(data.message); 
     if(fingerprint!=data.commentFingerPrint){
         $('#commentuser-'+data.commentId).html(data.username);
         $('#comment-'+data.commentId).find('.message').removeClass('message-personal');
         $('#comment-'+data.commentId).find('.user-action').remove();
+    }else{        
+        $(domElements.messageTextBox).val('');
+        $(domElements.messageTextBox).keyup();
     }
     updateCommentIds(data.commentId);
-    $(domElements.messageTextBox).val('');
     //$(domElements.messageTextBox).keyup();
     updateScrollbar();
 }
@@ -250,7 +291,7 @@ function sendMsg(parentId,msg,url,fingerPrint)
 function sendEditedMessage()
 {   
 
- return $.ajax({
+   return $.ajax({
     url: baseUrl+'/edit-message',
     type: "POST",
     data: {
@@ -336,7 +377,7 @@ function updateDisplayName(comments,username)
 
 function sendTypingProgress(username)
 {
-   return $.ajax({
+ return $.ajax({
     url: baseUrl+'/update-typing-status',
     type: "POST",
     data: {
@@ -353,11 +394,12 @@ function sendTypingProgress(username)
 
 function getParentId(ele)
 {
-   return $(ele).attr('id').split('-')[1];
+ return $(ele).attr('id').split('-')[1];
 }
 
-function updateScrollbar() {
-  $(domElements.messagesContainer).mCustomScrollbar("update").mCustomScrollbar('scrollTo', 'bottom', {
+function updateScrollbar(position='bottom') 
+{
+  $(domElements.messagesContainer).mCustomScrollbar("update").mCustomScrollbar('scrollTo', position, {
     scrollInertia: 10,
     timeout: 0
 });
@@ -365,14 +407,14 @@ function updateScrollbar() {
 
 function disableTextBox()
 {
- $(domElements.messageTextBox).attr('disabled',true);
- $(domElements.userReplayInput).attr('disabled',true);
+   $(domElements.messageTextBox).attr('disabled',true);
+   $(domElements.userReplayInput).attr('disabled',true);
 }
 
 function reEnableTextBox()
 {
- $(domElements.messageTextBox).attr('disabled',false);
- $(domElements.userReplayInput).attr('disabled',false);
+   $(domElements.messageTextBox).attr('disabled',false);
+   $(domElements.userReplayInput).attr('disabled',false);
 }
 
 function getCsrfToken()
@@ -422,14 +464,14 @@ function removeUserMessage(data)
 
 function updateCommentIds(newCommentId)
 {
- var oldComment=$(domElements.commentIds).val();
- var newComment=oldComment?oldComment+','+newCommentId:newCommentId; 
- $(domElements.commentIds).val(newComment);
+   var oldComment=$(domElements.commentIds).val();
+   var newComment=oldComment?oldComment+','+newCommentId:newCommentId; 
+   $(domElements.commentIds).val(newComment);
 }
 
 function getOriginalComment(commentId)
 {
- return $.ajax({
+   return $.ajax({
     url: baseUrl+'/original-message',
     type: "POST",
     data: { 
@@ -445,7 +487,7 @@ function getOriginalComment(commentId)
 
 function editComment(commentId)
 {
-   getOriginalComment(commentId).done(function(response) {     
+ getOriginalComment(commentId).done(function(response) {     
     $(domElements.addCommentBox).hide();
     $(domElements.editElements).show();
     $(domElements.editCommentBox).val(response.comment);
@@ -477,30 +519,59 @@ function cancelEdit()
 
 function ajaxSuccessReplay(request,$input)
 {
-   request.done(function(response) { 
-       reEnableTextBox();      
-       $input.val('');
-       $input.parent('div').find(domElements.childComments).append(response.message);
-       $input.parent().parent().find('.see-all-replay').html(response.childCount);
-       if(getUserName()){
+ request.done(function(response) { 
+     reEnableTextBox();      
+     $input.val('');
+     $input.parent('div').find(domElements.childComments).append(response.message);
+     $input.parent().parent().find('.see-all-replay').html(response.childCount);
+     if(getUserName()){
             //
             $input.focus();
         }
 
     });
 
-   request.fail(function(jqXHR, textStatus) {
-      console.log( "Request failed: " + textStatus );
-  }); 
+ request.fail(function(jqXHR, textStatus) {
+  console.log( "Request failed: " + textStatus );
+}); 
 }
 
-function getUrlVar() {
+function getUrlVar() 
+{
     var result = {};
     var location = window.location.href.split('#');
     var parts = location[0].replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
         result [key] = value;
     });
     return result;
+}
+
+function checkScrollPosition(el)
+{
+    if(el.mcs.top==0){
+        var ele=$(domElements.loadPreviousComment);  
+        bridgetLoader.init($(ele));    
+        loadPreviousComment($(domElements.commentIds).val()).done(function(response){ 
+            if(response.success){ 
+                bridgetLoader.end();  
+                $(domElements.commentIds).val(response.commentIds);
+                $(domElements.chatContainer).prepend(response.comments); 
+                if(!response.showLoadMore){                    
+                    $(domElements.loadPreviousComment).hide();            
+                }else{
+                    updateScrollbar(100);
+                }
+                
+            }
+        });
+    }
+}
+
+function typingtimeoutFunction()
+{
+    setInterval(function(){
+        typingMsg.removeTypingMsg();
+    },1000);
 }
 
 
@@ -513,24 +584,44 @@ function getUrlVar() {
 
     if(!storage.getItem('bridget-username')){
         jsonStorage.init(storage.getItem('myCommentIds')); 
-        setTimeout(function(){ 
+        if($(domElements.commentIds).val()==''){
+            typingMsg.init();
+            typingMsg.showTypingUser('Bridgit');
+            setTimeout(function(){
+                typingMsg.removeTypingMsg();
+                Bridgit.botResponse();
+                updateScrollbar();
+                typingtimeoutFunction();
+            }, 1000);  
+        }else{
+         setTimeout(function(){
+            typingMsg.init();
+            typingMsg.showTypingUser('Bridgit');
+            setTimeout(function(){
+                typingMsg.removeTypingMsg();
+                Bridgit.botResponse();
+                updateScrollbar();
+                typingtimeoutFunction();
+            }, 1000); 
+        }, 5000);   
+     }
+ }else{
+   typingtimeoutFunction();
+}
 
-           $(domElements.botResponse).html('What do you think of this?');
-           $(domElements.botContainer).show(); 
-           updateScrollbar();
-       }, 1000);      
+$(domElements.messagesContainer).mCustomScrollbar({
+    callbacks:{
+        onScroll:function(){
+            checkScrollPosition(this);
+        }
+    }
+});
 
-    }    
+updateScrollbar();
 
-    setInterval(function(){  $(domElements.typingBar).remove(); }, 1000);
-
-    $(domElements.messagesContainer).mCustomScrollbar();
-
-    updateScrollbar();
-
-    $(document).on('click',domElements.sendMessageBtn,function(){
-     $(domElements.addCommentBox).is(":visible")?sendNewMessage():sendEditedMessage();
- })
+$(document).on('click',domElements.sendMessageBtn,function(){
+   $(domElements.addCommentBox).is(":visible")?sendNewMessage():sendEditedMessage();
+})
     //userAction
     $(document).on('click',domElements.userAction,function(event){
         event.stopPropagation();
@@ -564,8 +655,8 @@ function getUrlVar() {
     $(document).on('keypress',domElements.messageTextBox,function(){
 
         if(!storage.getItem('bridget-username')){
-         var userName='someone';
-     }else{
+           var userName='someone';
+       }else{
         var userName=storage.getItem('bridget-username');
     }
     if (!$(this).val().trim()) {
@@ -648,24 +739,24 @@ function getUrlVar() {
 
         var keycode = (e.keyCode ? e.keyCode : e.which);
         if (keycode == 13 && e.shiftKey) {          
-         e.stopPropagation();
-     }
-     else if(keycode == '13'){
-       var $input=$(this);  
+           e.stopPropagation();
+       }
+       else if(keycode == '13'){
+         var $input=$(this);  
 
-       if(!$input.val().trim()){
-        return;
+         if(!$input.val().trim()){
+            return;
+        }
+
+        var parentId=getParentId($(this).parent().parent());
+
+
+        var request =sendMsg(parentId,$input.val(),pageUrl,fingerprint);
+
+        ajaxSuccessReplay(request,$input);
+
+
     }
-
-    var parentId=getParentId($(this).parent().parent());
-
-
-    var request =sendMsg(parentId,$input.val(),pageUrl,fingerprint);
-
-    ajaxSuccessReplay(request,$input);
-
-
-}
 });
 
     $(document).on('click',domElements.anonymousPostBtn,function(e){
@@ -703,31 +794,15 @@ function getUrlVar() {
         $(parentDiv).find(domElements.childCommentContainer).hide();
     });
 
-    $(document).on('click',domElements.loadPreviousComment,function(e){  
-        e.preventDefault();
-        var ele=$(this);  
-        bridgetLoader.init($(ele));    
-        loadPreviousComment($(domElements.commentIds).val()).done(function(response){ 
-            if(response.success){ 
-                bridgetLoader.end();  
-                $(domElements.commentIds).val(response.commentIds);
-                $(domElements.chatContainer).prepend(response.comments); 
-                if(!response.showLoadMore){
-                    $(domElements.loadPreviousComment).hide();            
-                }
-            }
-        });
-    });
-
     $(document).on('click',domElements.cancelEdit,function(e){  
-       cancelEdit();
-   });
+     cancelEdit();
+ });
 
     $(document).on('click','.cancel-edit-reply',function(e){  
-       $(this).parents('.child_comment_container').find('.user-replay').show();
-       $(this).parents('.child_comment_container').find('.user-edit-replay').hide();
-       $(this).parents('.child_comment_container').find('.cancel-edit-reply').hide();
-   });
+     $(this).parents('.child_comment_container').find('.user-replay').show();
+     $(this).parents('.child_comment_container').find('.user-edit-replay').hide();
+     $(this).parents('.child_comment_container').find('.cancel-edit-reply').hide();
+ });
 
     $(document).on('click',domElements.editMyReply,function(e){
         var ele=$(this);
@@ -744,6 +819,23 @@ function getUrlVar() {
 
     $(window).click(function() {
         $('.user-action').next('ul').hide();
+    });
+
+    $(document).on('click',domElements.loadPreviousComment,function(e){ 
+
+        e.preventDefault();
+        var ele=$(this);  
+        bridgetLoader.init($(ele));    
+        loadPreviousComment($(domElements.commentIds).val()).done(function(response){ 
+            if(response.success){ 
+                bridgetLoader.end();  
+                $(domElements.commentIds).val(response.commentIds);
+                $(domElements.chatContainer).prepend(response.comments); 
+                if(!response.showLoadMore){
+                    $(domElements.loadPreviousComment).hide();            
+                }
+            }
+        });
     });
 
 

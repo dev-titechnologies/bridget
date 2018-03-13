@@ -13,7 +13,7 @@ use App\BridgetComments;
 				@endif
 				@if(BridgetComments::getParentsCommentCount($param)>BridgetComments::COMMENTLIMIT)
 				
-				<a href="#" class="load-previous-comments">Load Prevous Comments</a>
+				<a href="#" class="load-previous-comments"></a>
 				@endif
 				<div id="scroll-container">
 					<div class="chat-content">

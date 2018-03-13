@@ -828,3 +828,9 @@ textarea:focus, input:focus{
 .user-comment{
   margin-right:15px;
 }
+.typed-user{
+  display: inline-block;
+}
+.type-msg{
+   display: inline-block;
+}
