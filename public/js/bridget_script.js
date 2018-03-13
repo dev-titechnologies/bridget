@@ -47,9 +47,9 @@ var domElements=(function(){
 
 var storage=(function(){
     getItem=function(item){
-     return localStorage.getItem(item);
- }
- setItem=function(item,value){
+       return localStorage.getItem(item);
+   }
+   setItem=function(item,value){
     localStorage.setItem(item,value); 
     return true;  
 }
@@ -109,10 +109,10 @@ var jsonStorage=(function(){
 
 
 $.fn.focusToEnd = function() {
-   return this.each(function() {
-       var v = $(this).val();
-       $(this).focus().val("").val(v);
-   });
+ return this.each(function() {
+     var v = $(this).val();
+     $(this).focus().val("").val(v);
+ });
 };
 
 var typingMsg=(function(){
@@ -131,15 +131,16 @@ var typingMsg=(function(){
         '</span>'+
         '</div>';
         if(!$(domElements.typingBar).length){            
-           $(domElements.chatContainer).append(msg);
-       }
-   }
-   removeTypingMsg=function(){
+         $(domElements.chatContainer).append(msg);
+     }
+ }
+ removeTypingMsg=function(){
     users=[];
     $(domElements.typingBar).remove();
 }
 showTypingUser=function(user){
     users.push(user);
+    console.log(users);
     uniqueUsers = users.filter(function(item, i, ar){ return ar.indexOf(item) === i; });
     $('.typed-user').html(uniqueUsers.toString()+'&nbsp');
     $('.type-msg').html("is typing...");
@@ -217,8 +218,8 @@ function ajaxSuccessComment(request)
     });
 
     request.fail(function(jqXHR, textStatus) {
-       console.log( "Request failed: " + textStatus );
-   });
+     console.log( "Request failed: " + textStatus );
+ });
 }
 
 function displayNewMessage(data)
@@ -291,7 +292,7 @@ function sendMsg(parentId,msg,url,fingerPrint)
 function sendEditedMessage()
 {   
 
-   return $.ajax({
+ return $.ajax({
     url: baseUrl+'/edit-message',
     type: "POST",
     data: {
@@ -377,7 +378,7 @@ function updateDisplayName(comments,username)
 
 function sendTypingProgress(username)
 {
- return $.ajax({
+   return $.ajax({
     url: baseUrl+'/update-typing-status',
     type: "POST",
     data: {
@@ -394,7 +395,7 @@ function sendTypingProgress(username)
 
 function getParentId(ele)
 {
- return $(ele).attr('id').split('-')[1];
+   return $(ele).attr('id').split('-')[1];
 }
 
 function updateScrollbar(position='bottom') 
@@ -407,14 +408,14 @@ function updateScrollbar(position='bottom')
 
 function disableTextBox()
 {
-   $(domElements.messageTextBox).attr('disabled',true);
-   $(domElements.userReplayInput).attr('disabled',true);
+ $(domElements.messageTextBox).attr('disabled',true);
+ $(domElements.userReplayInput).attr('disabled',true);
 }
 
 function reEnableTextBox()
 {
-   $(domElements.messageTextBox).attr('disabled',false);
-   $(domElements.userReplayInput).attr('disabled',false);
+ $(domElements.messageTextBox).attr('disabled',false);
+ $(domElements.userReplayInput).attr('disabled',false);
 }
 
 function getCsrfToken()
@@ -464,14 +465,14 @@ function removeUserMessage(data)
 
 function updateCommentIds(newCommentId)
 {
-   var oldComment=$(domElements.commentIds).val();
-   var newComment=oldComment?oldComment+','+newCommentId:newCommentId; 
-   $(domElements.commentIds).val(newComment);
+ var oldComment=$(domElements.commentIds).val();
+ var newComment=oldComment?oldComment+','+newCommentId:newCommentId; 
+ $(domElements.commentIds).val(newComment);
 }
 
 function getOriginalComment(commentId)
 {
-   return $.ajax({
+ return $.ajax({
     url: baseUrl+'/original-message',
     type: "POST",
     data: { 
@@ -487,7 +488,7 @@ function getOriginalComment(commentId)
 
 function editComment(commentId)
 {
- getOriginalComment(commentId).done(function(response) {     
+   getOriginalComment(commentId).done(function(response) {     
     $(domElements.addCommentBox).hide();
     $(domElements.editElements).show();
     $(domElements.editCommentBox).val(response.comment);
@@ -519,21 +520,21 @@ function cancelEdit()
 
 function ajaxSuccessReplay(request,$input)
 {
- request.done(function(response) { 
-     reEnableTextBox();      
-     $input.val('');
-     $input.parent('div').find(domElements.childComments).append(response.message);
-     $input.parent().parent().find('.see-all-replay').html(response.childCount);
-     if(getUserName()){
+   request.done(function(response) { 
+       reEnableTextBox();      
+       $input.val('');
+       $input.parent('div').find(domElements.childComments).append(response.message);
+       $input.parent().parent().find('.see-all-replay').html(response.childCount);
+       if(getUserName()){
             //
             $input.focus();
         }
 
     });
 
- request.fail(function(jqXHR, textStatus) {
-  console.log( "Request failed: " + textStatus );
-}); 
+   request.fail(function(jqXHR, textStatus) {
+      console.log( "Request failed: " + textStatus );
+  }); 
 }
 
 function getUrlVar() 
@@ -571,7 +572,7 @@ function typingtimeoutFunction()
 {
     setInterval(function(){
         typingMsg.removeTypingMsg();
-    },1000);
+    },3000);
 }
 
 
@@ -594,7 +595,7 @@ function typingtimeoutFunction()
                 typingtimeoutFunction();
             }, 1000);  
         }else{
-         setTimeout(function(){
+           setTimeout(function(){
             typingMsg.init();
             typingMsg.showTypingUser('Bridgit');
             setTimeout(function(){
@@ -604,12 +605,12 @@ function typingtimeoutFunction()
                 typingtimeoutFunction();
             }, 1000); 
         }, 5000);   
-     }
- }else{
-   typingtimeoutFunction();
-}
+       }
+   }else{
+     typingtimeoutFunction();
+ }
 
-$(domElements.messagesContainer).mCustomScrollbar({
+ $(domElements.messagesContainer).mCustomScrollbar({
     callbacks:{
         onScroll:function(){
             checkScrollPosition(this);
@@ -617,11 +618,11 @@ $(domElements.messagesContainer).mCustomScrollbar({
     }
 });
 
-updateScrollbar();
+ updateScrollbar();
 
-$(document).on('click',domElements.sendMessageBtn,function(){
-   $(domElements.addCommentBox).is(":visible")?sendNewMessage():sendEditedMessage();
-})
+ $(document).on('click',domElements.sendMessageBtn,function(){
+     $(domElements.addCommentBox).is(":visible")?sendNewMessage():sendEditedMessage();
+ })
     //userAction
     $(document).on('click',domElements.userAction,function(event){
         event.stopPropagation();
@@ -655,8 +656,8 @@ $(document).on('click',domElements.sendMessageBtn,function(){
     $(document).on('keypress',domElements.messageTextBox,function(){
 
         if(!storage.getItem('bridget-username')){
-           var userName='someone';
-       }else{
+         var userName='someone';
+     }else{
         var userName=storage.getItem('bridget-username');
     }
     if (!$(this).val().trim()) {
@@ -739,24 +740,24 @@ $(document).on('click',domElements.sendMessageBtn,function(){
 
         var keycode = (e.keyCode ? e.keyCode : e.which);
         if (keycode == 13 && e.shiftKey) {          
-           e.stopPropagation();
-       }
-       else if(keycode == '13'){
-         var $input=$(this);  
+         e.stopPropagation();
+     }
+     else if(keycode == '13'){
+       var $input=$(this);  
 
-         if(!$input.val().trim()){
-            return;
-        }
-
-        var parentId=getParentId($(this).parent().parent());
-
-
-        var request =sendMsg(parentId,$input.val(),pageUrl,fingerprint);
-
-        ajaxSuccessReplay(request,$input);
-
-
+       if(!$input.val().trim()){
+        return;
     }
+
+    var parentId=getParentId($(this).parent().parent());
+
+
+    var request =sendMsg(parentId,$input.val(),pageUrl,fingerprint);
+
+    ajaxSuccessReplay(request,$input);
+
+
+}
 });
 
     $(document).on('click',domElements.anonymousPostBtn,function(e){
@@ -795,14 +796,14 @@ $(document).on('click',domElements.sendMessageBtn,function(){
     });
 
     $(document).on('click',domElements.cancelEdit,function(e){  
-     cancelEdit();
- });
+       cancelEdit();
+   });
 
     $(document).on('click','.cancel-edit-reply',function(e){  
-     $(this).parents('.child_comment_container').find('.user-replay').show();
-     $(this).parents('.child_comment_container').find('.user-edit-replay').hide();
-     $(this).parents('.child_comment_container').find('.cancel-edit-reply').hide();
- });
+       $(this).parents('.child_comment_container').find('.user-replay').show();
+       $(this).parents('.child_comment_container').find('.user-edit-replay').hide();
+       $(this).parents('.child_comment_container').find('.cancel-edit-reply').hide();
+   });
 
     $(document).on('click',domElements.editMyReply,function(e){
         var ele=$(this);
