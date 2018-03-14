@@ -11,13 +11,10 @@ use App\BridgetComments;
 |
 */
 Route::get('/', function () {
-	$b=App\BridgetComments::onlyTrashed()
-                ->count();
-	print_r($b);
 	return view('welcome');
 });
 Route::get('/docs', function () {
-	dd('<div id="bridget_container"></div> <script src="http://ec2-54-252-171-131.ap-southeast-2.compute.amazonaws.com/js/bridget_maybe.js"></script>');
+	dd('<div id="bridget_container" class="bridget_container"></div> <script src="http://ec2-54-252-171-131.ap-southeast-2.compute.amazonaws.com/js/bridget_maybe.js"></script>');
 });
 Route::match(['get', 'post'],'bridget','BridgetController@getMessages');
 Route::get('seeder', 'BridgetController@index');
