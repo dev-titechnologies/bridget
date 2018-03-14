@@ -66,6 +66,12 @@ class BridgetController extends Controller
 		$channel=BridgetUrl::getId($url);
 		$browserFingerPrint=BridgetComments::getFingerPrint();
 		$userName=$request->input('username');
+
+		// do not allow duplicate comments/replies based on their parents for each user
+		if(BridgetComments::isCommentExist($comment,$parentId,$browserFingerPrint)){
+			return response()->json(['success'=>false,'duplicate'=>true]);
+		}
+
 		$comment=BridgetComments::addMessage($comment,$parentId,$url,$browserFingerPrint,$userName);
 		$childCount=false;
 		if($comment){

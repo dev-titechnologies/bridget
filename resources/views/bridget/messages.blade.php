@@ -41,9 +41,15 @@ use App\BridgetComments;
 			<textarea class="message-input comment-box add-comment-box" placeholder="Add a reply" data-autoresize></textarea>
 			<input type="hidden" id="old-comment-id">
 			<textarea class="message-input edit-comment-box edit-ele" data-autoresize></textarea>			
-			<button type="submit" class="message-submit" id="sendMessage">Send</button>	
+			<button type="submit" class="message-submit" id="sendMessage">Send</button>
+
 		</div>
+
 		<span class="edit-ele cancel-edit cursor_pointer">Cancel</span>
+		<div class="typing-area">
+			<span class="typed-user"></span>
+			<span class="type-msg"></span>
+		</div>	
 	</div>
 
 </section>
