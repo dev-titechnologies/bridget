@@ -1,7 +1,8 @@
 var Bridgit=(function(){
-  var assetPath = 'http://192.168.1.57/bridget_backend/public';
-  var iFrameUrl = 'http://192.168.1.57/bridget_backend/public/bridget';
-  var ContainerId = '.bridget_container';
+var assetPath = 'http://ec2-54-252-171-131.ap-southeast-2.compute.amazonaws.com';
+var iFrameUrl = 'http://ec2-54-252-171-131.ap-southeast-2.compute.amazonaws.com/bridget';
+  
+var ContainerId = '.bridget_container';
   var IframeContainerId = '.bridget-frame';
   var options={};
   var userOptions={};
@@ -97,7 +98,7 @@ var Bridgit=(function(){
 })();
 
 Bridgit.init({
-  'containerId':"bridget_container1"
+  'containerId':"bridget_container"
 })
 
 
