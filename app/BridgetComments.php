@@ -45,7 +45,7 @@ class BridgetComments extends Eloquent
 	public static function addMessage($comment,$parentId,$url,$browserFingerPrint,$userName)
 	{
 		$bridgetComment=new self();
-		$bridgetComment->comment=htmlentities($comment);
+		$bridgetComment->comment=strip_tags($comment,'<a>');
 		$bridgetComment->parent_id=$parentId;
 		$bridgetComment->url=$url;
 		$bridgetComment->browser_fingerprint=$browserFingerPrint;
@@ -79,8 +79,29 @@ class BridgetComments extends Eloquent
 
 	public static function getFingerPrint()
 	{
-
 		return request()->header('x-fingerprint')?request()->header('x-fingerprint'):request()->fingerPrint;
+	}
+
+	public static function isCommentExist($comment,$parent=null,$browserFingerPrint)
+	{
+		return self::where('comment', '=', $comment)
+		->where('parent_id','=',$parent)
+		->where('browser_fingerprint','=',$browserFingerPrint)
+		->exists()?true:false;
+	}
+
+	public static function isTagMatch($string, $tagname){
+		$pattern = "#<\s*?$tagname\b[^>]*>(.*?)</$tagname\b[^>]*>#s";
+		preg_match($pattern, $string, $matches);
+		return isset($matches)?$matches:false;
+	}
+	public static function formatComment($comment)
+	{
+		if($comment->browser_fingerprint==self::getFingerPrint()){
+			return nl2br($comment->comment); 
+		}else{
+			return strip_tags(nl2br($comment->comment)); 
+		}
 	}
 
 

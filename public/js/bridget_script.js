@@ -27,6 +27,7 @@ var domElements=(function(){
         'loadPreviousComment':'.load-previous-comments',
         'typingBar':'#typing-bar',
         'typingUser':'.typing-user',
+        'typingMessageArea':'.typing-area',
         'deleteMyComment':'.delete-my-comment',
         'deleteMyReply':'.delete-my-reply',
         'editMyComment':'.edit-my-comment',
@@ -118,8 +119,9 @@ $.fn.focusToEnd = function() {
 var typingMsg=(function(){
     var uniqueUsers=[];
     var users=[];
+    const TYPINGNAMEDISPLAYLIMIT = 3;
     init=function(){        
-        var msg= '<div class="message loading" id="typing-bar">'+
+    /*    var msg= '<div class="message loading" id="typing-bar">'+
         '<div class="typing-user">'+
         '<div class="typed-user"></div>'+
         '<div class="type-msg"></div>'+
@@ -131,25 +133,29 @@ var typingMsg=(function(){
         '</span>'+
         '</div>';
         if(!$(domElements.typingBar).length){            
-         $(domElements.chatContainer).append(msg);
-     }
- }
- removeTypingMsg=function(){
-    users=[];
-    $(domElements.typingBar).remove();
-}
-showTypingUser=function(user){
-    users.push(user);
-    console.log(users);
-    uniqueUsers = users.filter(function(item, i, ar){ return ar.indexOf(item) === i; });
-    $('.typed-user').html(uniqueUsers.toString()+'&nbsp');
-    $('.type-msg').html("is typing...");
-}
-return {
-    init:init,
-    removeTypingMsg:removeTypingMsg,
-    showTypingUser:showTypingUser
-}
+            $(domElements.typingMessageArea).html(msg);
+        }*/
+    }
+    removeTypingMsg=function(){
+        users=[];
+        $('.typed-user').html('');
+        $('.type-msg').html('');
+    }
+    showTypingUser=function(user){
+        users.push(user);
+        uniqueUsers = users.filter(function(item, i, ar){ return ar.indexOf(item) === i; });
+        if(uniqueUsers.length>TYPINGNAMEDISPLAYLIMIT){
+            $('.typed-user').html(users.length);
+        }else{
+            $('.typed-user').html(uniqueUsers.toString()+'&nbsp');
+        }        
+        $('.type-msg').html("is typing...");
+    }
+    return {
+        init:init,
+        removeTypingMsg:removeTypingMsg,
+        showTypingUser:showTypingUser
+    }
 })();
 
 var Bridgit=(function(){
@@ -180,9 +186,9 @@ function userNameFormHtml()
 
 function displayTypingBar(data)
 {    
-    typingMsg.removeTypingMsg();
+    //typingMsg.removeTypingMsg();
     if(fingerprint!=data.fingerprint){      
-        $(domElements.chatContainer).append(typingMsg.init());
+        typingMsg.init();
         typingMsg.showTypingUser(data.username);
         updateScrollbar();
     }
@@ -523,6 +529,7 @@ function ajaxSuccessReplay(request,$input)
    request.done(function(response) { 
        reEnableTextBox();      
        $input.val('');
+       $input.keyup();
        $input.parent('div').find(domElements.childComments).append(response.message);
        $input.parent().parent().find('.see-all-replay').html(response.childCount);
        if(getUserName()){
@@ -572,7 +579,7 @@ function typingtimeoutFunction()
 {
     setInterval(function(){
         typingMsg.removeTypingMsg();
-    },3000);
+    },6000);
 }
 
 
@@ -653,7 +660,7 @@ function typingtimeoutFunction()
 
 
 
-    $(document).on('keypress',domElements.messageTextBox,function(){
+    $(document).on('keypress input',domElements.messageTextBox,function(){
 
         if(!storage.getItem('bridget-username')){
          var userName='someone';

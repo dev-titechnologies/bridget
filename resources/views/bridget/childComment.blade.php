@@ -2,7 +2,10 @@
 use App\BridgetComments;
 ?>
 <div id="reply-{{$comment->_id}}">
-	<b>{{$comment->browser_fingerprint==BridgetComments::getFingerPrint()?'Me':$comment->username}}:</b> <span class="comment-reply"><?php echo nl2br($comment->comment); ?></span>
+	<b>{{$comment->browser_fingerprint==BridgetComments::getFingerPrint()?'Me':$comment->username}}:</b> <span class="comment-reply">	
+	<?php echo BridgetComments::formatComment($comment); ?>
+		
+	</span>
 	<br>
 	
 	<span class="edited-comment">
