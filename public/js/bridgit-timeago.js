@@ -1,26 +1,26 @@
 (function timeAgo(selector) {
 
   var templates = {
-     prefix: "",
-     suffix: " ago",
-     seconds: "few seconds",
-     minute: "%d minute",
-     minutes: "%d minutes",
-     hour: "%d hour",
-     hours: "%d hours",
-     day: "%d day",
-     days: "%d days",
-     month: "%d month",
-     months: "%d months",
-     year: "%d year",
-     years: "%d years"
- };
- var template = function (t, n) {
-     return templates[t] && templates[t].replace(/%d/i, Math.abs(Math.round(n)));
- };
+   prefix: "",
+   suffix: "",
+   seconds: "few seconds",
+   minute: "%d m",
+   minutes: "%d m",
+   hour: "%d h",
+   hours: "%d h",
+   day: "%d d",
+   days: "%d d",
+   month: "%d m",
+   months: "%d m",
+   year: "%d y",
+   years: "%d y"
+};
+var template = function (t, n) {
+   return templates[t] && templates[t].replace(/%d/i, Math.abs(Math.round(n)));
+};
 
- var timer = function (time) {
-     if (!time) return;
+var timer = function (time) {
+   if (!time) return;
         time = time.replace(/\.\d+/, ""); // remove milliseconds
         time = time.replace(/-/, "/").replace(/-/, "/");
         time = time.replace(/T/, " ").replace(/Z/, " UTC");
