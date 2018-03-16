@@ -45,7 +45,7 @@ class BridgetComments extends Eloquent
 	public static function addMessage($comment,$parentId,$url,$browserFingerPrint,$userName)
 	{
 		$bridgetComment=new self();
-		$bridgetComment->comment=strip_tags($comment,'<a>');
+		$bridgetComment->comment=htmlentities($comment);
 		$bridgetComment->parent_id=$parentId;
 		$bridgetComment->url=$url;
 		$bridgetComment->browser_fingerprint=$browserFingerPrint;
@@ -100,7 +100,7 @@ class BridgetComments extends Eloquent
 		if($comment->browser_fingerprint==self::getFingerPrint()){
 			return nl2br($comment->comment); 
 		}else{
-			return strip_tags(nl2br($comment->comment)); 
+			return preg_replace('/\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|$!:,.;]*[A-Z0-9+&@#\/%=~_|$]/i', '', nl2br($comment->comment));
 		}
 	}
 
