@@ -170,7 +170,8 @@ class BridgetController extends Controller
 						$commentData=array('commentId'=>$commentId);
 						event(new \App\Events\DeleteMessage($commentData,$channel->_id));
 					}
-					return response()->json(['success'=>true]);
+					$noOfReply=$comment->parent_id?BridgetComments::numberOfReply($comment->parent_id):false;
+					return response()->json(['success'=>true,'noOfReply'=>$noOfReply]);
 				}				
 			}
 		}else{

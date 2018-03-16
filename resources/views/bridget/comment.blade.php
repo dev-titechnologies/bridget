@@ -34,6 +34,6 @@ use App\BridgetComments;
 </div>
 
 <div class="replybox child_comment_container" style="display: none;">
-
+	@include('bridget.childComments',['childComments' => BridgetComments::getChildrens($comment->_id)])	
 </div>
 </div>
