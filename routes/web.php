@@ -26,6 +26,7 @@ Route::post('update-typing-status', 'BridgetController@updateTypingStatus');
 Route::post('delete-my-comment', 'BridgetController@deleteUserMessage');
 Route::post('edit-message', 'BridgetController@editUserMessage');
 Route::post('original-message', 'BridgetController@originalMessage');
+Route::get('swear-word', 'BridgetController@addSwearWord');
 Route::get('refresh-csrf', function(){
 	return csrf_token();
 });

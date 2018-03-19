@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\BridgetComments;
 use App\BridgetUrl;
 use Session;
+use App\ProfanityFilter;
 
 class BridgetController extends Controller
 {
@@ -217,6 +218,18 @@ class BridgetController extends Controller
 			return response()->json(['success'=>true,'comment'=>$comment->comment]);
 		}else{
 			return response()->json(['success'=>false,'msg'=>'failed to load the resource']);
+		}
+	}
+
+	public function addSwearWord(Request $request)
+	{
+		$word= $request->input('word');
+		$profinityFilter=new ProfanityFilter();
+		$profinityFilter->word=htmlentities($word);
+		if($profinityFilter->save()){
+			echo "saved";
+		}else{
+			echo "somme thing went wrong";
 		}
 	}
 

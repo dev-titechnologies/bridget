@@ -5,6 +5,7 @@ namespace App;
 use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
 use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 use App\ProfanityFilter;
+use App\bridgetLibrary\FilterString;
 
 class BridgetComments extends Eloquent
 {
@@ -111,11 +112,8 @@ class BridgetComments extends Eloquent
 
 
 
-	public static function checkProfanityWord($comment)
+/*	public static function checkProfanityWord($comment)
 	{
-
-
-
 		$badword = array();
 		$replacementword = array(); // replace with the list of bad words from attached rar file
 		$words = ProfanityFilter::get()->pluck('word')->toArray();
@@ -131,6 +129,22 @@ class BridgetComments extends Eloquent
 	public static function addStars($word) {
 		$length = strlen($word);
 		return str_repeat("*", $length);
+	}*/
+
+	public static function checkProfanityWord($comment)
+	{
+		$filter = new FilterString;
+
+		$filter->strings = ProfanityFilter::get()->pluck('word')->toArray();
+
+		$filter->text = $comment;
+
+		$filter->keep_first_last = false;
+		$filter->replace_matches_inside_words = false;
+
+		$new_text = $filter->filter();
+
+		return $new_text;
 	}
 
 }
