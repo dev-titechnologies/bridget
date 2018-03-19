@@ -68,7 +68,7 @@ class BridgetController extends Controller
 		$userName=$request->input('username');
 
 		// do not allow duplicate comments/replies based on their parents for each user
-		if(BridgetComments::isCommentExist($comment,$parentId,$browserFingerPrint)){
+		if(BridgetComments::isCommentExist($comment,$parentId,$browserFingerPrint,$url)){
 			return response()->json(['success'=>false,'duplicate'=>true]);
 		}
 

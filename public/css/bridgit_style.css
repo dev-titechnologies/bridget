@@ -833,3 +833,10 @@ textarea:focus, input:focus{
     text-align: left;
     padding: 0 20px;
 }
+.page-loader{
+    text-align: center;
+    margin: 36% 0;
+}
+.page-loader img{
+  width:83px;
+}

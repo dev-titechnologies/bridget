@@ -4,16 +4,16 @@
    prefix: "",
    suffix: "",
    seconds: "few seconds",
-   minute: "%d m",
-   minutes: "%d m",
-   hour: "%d h",
-   hours: "%d h",
-   day: "%d d",
-   days: "%d d",
-   month: "%d m",
-   months: "%d m",
-   year: "%d y",
-   years: "%d y"
+   minute: "%dm",
+   minutes: "%dm",
+   hour: "%dh",
+   hours: "%dh",
+   day: "%dd",
+   days: "%dd",
+   month: "%dm",
+   months: "%dm",
+   year: "%dy",
+   years: "%dy"
 };
 var template = function (t, n) {
    return templates[t] && templates[t].replace(/%d/i, Math.abs(Math.round(n)));

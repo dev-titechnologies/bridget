@@ -4,6 +4,7 @@ namespace App;
 
 use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
 use Jenssegers\Mongodb\Eloquent\SoftDeletes;
+use App\ProfanityFilter;
 
 class BridgetComments extends Eloquent
 {
@@ -82,10 +83,11 @@ class BridgetComments extends Eloquent
 		return request()->header('x-fingerprint')?request()->header('x-fingerprint'):request()->fingerPrint;
 	}
 
-	public static function isCommentExist($comment,$parent=null,$browserFingerPrint)
+	public static function isCommentExist($comment,$parent=null,$browserFingerPrint,$url)
 	{
 		return self::where('comment', '=', $comment)
 		->where('parent_id','=',$parent)
+		->where('url','=',$url)
 		->where('browser_fingerprint','=',$browserFingerPrint)
 		->exists()?true:false;
 	}
@@ -97,10 +99,24 @@ class BridgetComments extends Eloquent
 	}
 	public static function formatComment($comment)
 	{
+
+		
+		$profinityFilterdComment=self::checkProfanityWord($comment->comment);
 		if($comment->browser_fingerprint==self::getFingerPrint()){
-			return nl2br($comment->comment); 
+			return nl2br($profinityFilterdComment); 
 		}else{
-			return preg_replace('/\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|$!:,.;]*[A-Z0-9+&@#\/%=~_|$]/i', '', nl2br($comment->comment));
+			return preg_replace('/\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|$!:,.;]*[A-Z0-9+&@#\/%=~_|$]/i', '', nl2br($profinityFilterdComment));
+		}
+	}
+
+	public static function checkProfanityWord($comment)
+	{
+		$profinityWords=ProfanityFilter::get()->pluck('word')->toArray();
+		$contains = str_contains($comment, $profinityWords);
+		if($contains){
+			return str_replace($profinityWords,'####',$comment);
+		}else{
+			return $comment;
 		}
 	}
 

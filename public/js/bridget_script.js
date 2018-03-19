@@ -1,7 +1,7 @@
 var selectedElement=null;
 var deleteMsgCount=0;
 var currentTime=new Date().getTime();
-var userTouchedBridgit=false;
+
 
 var domElements=(function(){
 	return {  
@@ -40,7 +40,10 @@ var domElements=(function(){
 		'editElements':'.edit-ele',
 		'cancelEdit':'.cancel-edit',
 		'oldCommentId':'#old-comment-id',
-		'editMyReply':'.edit-my-reply'
+		'editMyReply':'.edit-my-reply',
+		'pageLoader':'#page-loader',
+		'contentWrapper':'#content-wrapper'
+
 	}
 
 })();
@@ -114,6 +117,24 @@ var jsonStorage=(function(){
 
 })();
 
+var userTypeStatus=(function(){
+
+	var userTouchedBridgit=false;
+
+	updateUserTouchStatus=function(status){
+		userTouchedBridgit=status;
+	}
+	getUserTouchStatus=function(){
+		return userTouchedBridgit;
+	}
+
+	return {
+		updateUserTouchStatus:updateUserTouchStatus,
+		getUserTouchStatus:getUserTouchStatus
+	}
+})();
+
+
 
 $.fn.focusToEnd = function() {
 	return this.each(function() {
@@ -138,7 +159,7 @@ var typingMsg=(function(){
 		users.push(user);
 		uniqueUsers = users.filter(function(item, i, ar){ return ar.indexOf(item) === i; });
 		if(uniqueUsers.length>TYPINGNAMEDISPLAYLIMIT){
-			$('.typed-user').html(users.length);
+			$('.typed-user').html(uniqueUsers.length);
 		}else{
 			$('.typed-user').html(uniqueUsers.toString()+'&nbsp');
 		}        
@@ -399,7 +420,7 @@ function getParentId(ele)
 function updateScrollbar(position='bottom') 
 {
 	$(domElements.messagesContainer).mCustomScrollbar("update").mCustomScrollbar('scrollTo', position, {
-		scrollInertia: 10,
+		scrollInertia: 0,
 		timeout: 0
 	});
 }
@@ -549,7 +570,10 @@ function getUrlVar()
 
 function checkScrollTop(el)
 {
+
 	if(el.mcs.top==0){
+		;
+		var firstChild=$('.chat-content').children(":first")
 		var ele=$(domElements.loadPreviousComment);  
 		bridgetLoader.init($(ele));    
 		loadPreviousComment($(domElements.commentIds).val()).done(function(response){ 
@@ -560,7 +584,8 @@ function checkScrollTop(el)
 				if(!response.showLoadMore){                    
 					$(domElements.loadPreviousComment).hide();            
 				}else{
-					updateScrollbar(100);
+					$('.chat-content').find('.message').removeClass('new');
+					updateScrollbar($(firstChild).find('.message').offset().top-200);
 				}
 
 			}
@@ -577,20 +602,12 @@ function typingtimeoutFunction()
 
 function showWhatDoYouThink()
 {
-/*	if(userTouchedBridgit){
-		return false;
-	}else if(!storage.getItem('bridget-username')){
-		return true;
-	}*/
 	if(!storage.getItem('bridget-username')){
 		return true;
 	}
 }
 
-function updateUserTochStatus(status)
-{
-	userTouchedBridgit=status;
-}
+
 
 (function(){
 
@@ -598,7 +615,8 @@ function updateUserTochStatus(status)
 		var offset = this.offsetHeight - this.clientHeight;
 		jQuery(this).on('keyup input', function() { resizeTextarea(this,offset); }).removeAttr('data-autoresize');
 	});
-
+	$(domElements.pageLoader).hide();
+	$(domElements.contentWrapper).show();
 /*	displayWhatDoYouThink=true;
 
 	if(!jsonStorage.getStorage('whatdoyouthink')){
@@ -624,8 +642,10 @@ function updateUserTochStatus(status)
 			typingMsg.showTypingUser('Bridgit');
 			setTimeout(function(){
 				typingMsg.removeTypingMsg();
-				Bridgit.botResponse();
-				updateScrollbar();
+				if(!userTypeStatus.getUserTouchStatus()){
+					Bridgit.botResponse();
+					updateScrollbar();
+				}
 				typingtimeoutFunction();
 			}, 1000);  
 		}else{
@@ -635,8 +655,10 @@ function updateUserTochStatus(status)
 				typingMsg.showTypingUser('Bridgit');
 				setTimeout(function(){
 					typingMsg.removeTypingMsg();
-					Bridgit.botResponse();
-					updateScrollbar();
+					if(!userTypeStatus.getUserTouchStatus()){
+						Bridgit.botResponse();
+						updateScrollbar();
+					}					
 					typingtimeoutFunction();
 				}, 1000); 
 			}, 5000);   
@@ -649,14 +671,15 @@ function updateUserTochStatus(status)
 		callbacks:{
 			onScroll:function(){
 				checkScrollTop(this);
-			}
-		}
-	});
+			},
+		},
+	});	
+
 
 	updateScrollbar();
 
 	$(document).on('click',domElements.sendMessageBtn,function(){
-		updateUserTochStatus(true);
+		userTypeStatus.updateUserTouchStatus(true);
 		$(domElements.addCommentBox).is(":visible")?sendNewMessage():sendEditedMessage();
 	})
     //userAction
@@ -692,7 +715,7 @@ function updateUserTochStatus(status)
 
 
     $(document).on('keypress input',domElements.messageTextBox,function(){
-    	updateUserTochStatus(true);
+    	userTypeStatus.updateUserTouchStatus(true);
     	if(!storage.getItem('bridget-username')){
     		var userName='someone';
     	}else{

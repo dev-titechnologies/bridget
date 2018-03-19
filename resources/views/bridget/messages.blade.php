@@ -1,5 +1,6 @@
 <?php
 use App\BridgetComments;
+use App\ProfanityFilter;
 ?>
 @extends('layouts.bridget')
 @section('content')
@@ -8,6 +9,7 @@ use App\BridgetComments;
 
 		<div class="messages">
 			<div class="messages-content">
+
 				@if(!count($parentComments))
 				<div class="no-comments"><b>No comments yet.Be the first to review this product</b></div>	
 				@endif
@@ -21,7 +23,6 @@ use App\BridgetComments;
 						@include('bridget.parentComments',['comments' => $parentComments])
 
 					</div>
-
 					<div class="message bot">
 						<figure class="avatar">
 							<img src="img/bot.png">
