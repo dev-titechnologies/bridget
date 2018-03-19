@@ -109,16 +109,29 @@ class BridgetComments extends Eloquent
 		}
 	}
 
+
+
 	public static function checkProfanityWord($comment)
 	{
-		$profinityWords=ProfanityFilter::get()->pluck('word')->toArray();
-		$contains = str_contains($comment, $profinityWords);
-		if($contains){
-			return str_replace($profinityWords,'####',$comment);
-		}else{
-			return $comment;
+
+
+
+		$badword = array();
+		$replacementword = array(); // replace with the list of bad words from attached rar file
+		$words = ProfanityFilter::get()->pluck('word')->toArray();
+		foreach ($words as $key => $word) {
+			$badword[$key] = $word;
+			$replacementword[$key] = self::addStars($word);
+			$badword[$key] = "/\b{$badword[$key]}\b/i";
 		}
+		$comment = preg_replace($badword, $replacementword, $comment);
+		return $comment;
+
+	}
+	public static function addStars($word) {
+		$length = strlen($word);
+		return str_repeat("*", $length);
 	}
 
-
 }
+

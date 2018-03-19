@@ -12,10 +12,12 @@ class BridgetController extends Controller
 
 
 	public function getMessages(Request $request)
-	{		
+	{	
+
 		$pageNumber=$request->input('page_num')?$request->input('page_num'):0;
 		$param = $request->input('bridget_url');
 		$excludedIds=$request->input('excluded_ids')?explode(',',$request->input('excluded_ids')):[];
+		$bridgitQuestion=$request->input('bridget_question');
 		$parentComments=BridgetComments::getParents($param,BridgetComments::COMMENTLIMIT,$excludedIds);
 		if(!BridgetUrl::isUrlExist($param)){
 			BridgetUrl::addUrl($param);
@@ -50,7 +52,8 @@ class BridgetController extends Controller
 				"parentComments"=>$parentComments,
 				'channelId'=>$url->_id,
 				'commentIds'=>$commentIds,
-				'fingerPrint'=>$fingerPrint
+				'fingerPrint'=>$fingerPrint,
+				'bridgitQuestion'=>$bridgitQuestion
 				]);	
 		}
 

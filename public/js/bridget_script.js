@@ -42,7 +42,9 @@ var domElements=(function(){
 		'oldCommentId':'#old-comment-id',
 		'editMyReply':'.edit-my-reply',
 		'pageLoader':'#page-loader',
-		'contentWrapper':'#content-wrapper'
+		'contentWrapper':'#content-wrapper',
+		'pinnedMsg':'#pinned-msg',
+		'pinnedMsgContainer':'.pinned-msg-container'
 
 	}
 
@@ -178,8 +180,8 @@ var Bridgit=(function(){
 
 	}
 	botResponse=function(){
-		$(domElements.botResponse).html('What do you think of this?');
-		$(domElements.botContainer).show();
+		$(domElements.pinnedMsg).html(bridgitQuestion);
+		$(domElements.pinnedMsgContainer).show();
 	}
 	return {
 		init:init,
@@ -277,6 +279,7 @@ function getUserName()
 	var bridgetUsername = storage.getItem('bridget-username');
 
 	if(!bridgetUsername){
+		$(domElements.pinnedMsgContainer).hide();
 		$(domElements.botResponse).html(userNameFormHtml());
 		$(domElements.botContainer).show();
 		$(domElements.userNameField).focus();
@@ -572,7 +575,6 @@ function checkScrollTop(el)
 {
 
 	if(el.mcs.top==0){
-		;
 		var firstChild=$('.chat-content').children(":first")
 		var ele=$(domElements.loadPreviousComment);  
 		bridgetLoader.init($(ele));    
@@ -644,7 +646,6 @@ function showWhatDoYouThink()
 				typingMsg.removeTypingMsg();
 				if(!userTypeStatus.getUserTouchStatus()){
 					Bridgit.botResponse();
-					updateScrollbar();
 				}
 				typingtimeoutFunction();
 			}, 1000);  
@@ -657,7 +658,6 @@ function showWhatDoYouThink()
 					typingMsg.removeTypingMsg();
 					if(!userTypeStatus.getUserTouchStatus()){
 						Bridgit.botResponse();
-						updateScrollbar();
 					}					
 					typingtimeoutFunction();
 				}, 1000); 

@@ -761,9 +761,7 @@ textarea:focus, input:focus{
 
 @media (max-device-width: 667px) {
 
-  .message-box .message-submit {
-    display: block;
-  }
+  
 }
 
 .dropbtn {
@@ -830,13 +828,51 @@ textarea:focus, input:focus{
   margin-right:15px;
 }
 .typing-area{
-    text-align: left;
-    padding: 0 20px;
+  text-align: left;
+  padding: 0 20px;
 }
 .page-loader{
-    text-align: center;
-    margin: 36% 0;
+  text-align: center;
+  margin: 36% 0;
 }
 .page-loader img{
   width:83px;
+}
+.pinned-msg-container{
+  width: 100%;
+  position: relative; 
+  text-align: center;
+  padding: 10px;
+  background: #eee;
+  display: none;
+  border-bottom: 1px solid gainsboro;
+  float: left;
+  z-index: 100;
+}
+
+.pinned-msg-container .avatar{
+ 
+  z-index: 1;
+  -webkit-border-radius: 30px;
+  -moz-border-radius: 30px;
+  border-radius: 30px;
+  overflow: hidden;
+  margin: 0;
+  height:100%;
+  float:left;
+  width:20%;
+}
+.pinned-msg-container .avatar img{
+  height:100%;
+  width:30px;
+}
+#pinned-msg{
+  padding-left: 0px;
+  float:left;
+  width:80%;
+  padding-top: 6px;
+  text-align: left;
+}
+.clear{
+  clear:both;
 }

@@ -4,6 +4,13 @@ use App\ProfanityFilter;
 ?>
 @extends('layouts.bridget')
 @section('content')
+<div class="pinned-msg-container">
+	<figure class="avatar">
+		<img src="img/bot.png">
+	</figure>
+	<div id="pinned-msg"></div>
+</div>
+<div class="clear"></div>
 <section class="avenue-messenger">
 	<div class="chat">
 
@@ -84,6 +91,7 @@ use App\ProfanityFilter;
 <script>
 	var pageUrl="<?php echo $param; ?>";
 	var fingerprint = "<?php echo $fingerPrint;?>";
+	var bridgitQuestion="<?php echo $bridgitQuestion;?>";
 	$.ajaxSetup({
 		headers: { 'x-fingerprint': fingerprint }
 	});
