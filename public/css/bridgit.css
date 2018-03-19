@@ -3,8 +3,7 @@ bridget-chat Title
 --------------------*/
 .bridget_container{
   z-index: 9999999;
-  position: absolute;
-  right: 0;
+  float:right;
 }
   .bridgit-messenger.active {
     display: block;
