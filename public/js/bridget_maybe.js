@@ -76,6 +76,7 @@ var ContainerId = '.bridget_container';
   promiseFunctions=function(){
     $('.bridget-bridget-chat-btn').click(function (e) {
       e.stopImmediatePropagation();
+      toggleChatBtn();      
       jQuery(this).toggleClass('active');
       jQuery(this).parents('.bridget_container').find('.bridgit-messenger').toggleClass('active');
       addIframe($(this).attr('id').split('-').pop(),$(this).find('.bridgit-url').val());
@@ -90,6 +91,12 @@ var ContainerId = '.bridget_container';
   removeHash=function(string){
     return string.substring(1, string.length);
   }
+  toggleChatBtn=function(){
+    $('.bridget_container').each(function(){
+      jQuery(this).find('.bridgit-messenger').removeClass('active');
+      jQuery(this).find('.bridget-bridget-chat-btn').addClass('active');
+    })
+  }
 
   return {
     init:init,
@@ -100,7 +107,4 @@ var ContainerId = '.bridget_container';
 Bridgit.init({
   'containerId':"bridget_container"
 })
-
-
-
 

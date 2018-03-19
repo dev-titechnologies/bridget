@@ -13,10 +13,13 @@
 	<script src="{{ URL::asset('js/bridgit-timeago.js') }}"></script>	
 	<script>var baseUrl="<?php echo URL::to('/'); ?>"</script>
 </head>
-
+<div id="page-loader" class="page-loader">
+	<img src="{{URL::asset('img/loader1.gif')}}" >
+</div>
 <body>
-
-	@yield('content')
+	<div id="content-wrapper" style="display: none;">
+		@yield('content')
+	</div>
 </body>
 
 
@@ -30,6 +33,6 @@
 	  		$('[name="csrf-token"]').attr("content", csrfToken);
 	  	});
 	  }
-</script>
+	</script>
 
 	</html>
