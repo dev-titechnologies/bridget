@@ -27,13 +27,15 @@ var Bridgit=(function(){
       'url':window.location.href,
       'containerId':ContainerId,
       'bridgitId':'#bridgit'+'-'+ContainerId,
-      'question':'What do you think of this?'
+      'question':'What do you think of this?',
+      'bridgitName':'Bridgit'
     };
     userOptions = {
       'url':config.url,
       'containerId':'#'+config.containerId,
       'bridgitId':'#bridgit'+'-'+config.containerId,
-      'question':config.question
+      'question':config.question,
+      'bridgitName':config.bridgitName
     };
     options=$.extend(options, userOptions);
     jQuery('head').append('<link rel="stylesheet" href="' + assetPath + '/css/bridgit.css" type="text/css" />');
@@ -42,7 +44,7 @@ var Bridgit=(function(){
     meta.name='viewport';
     meta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0');
     document.getElementsByTagName('head')[0].appendChild(meta);
-    jQuery(options.containerId).html('<div class="bridget-bridget-chat-btn active" id="bridget-bridget-chat-btn-'+removeHash(options.bridgitId)+'"> <input type="hidden" class="bridgit-url" value="'+options.url+'"><input type="hidden" class="bridgit-question" value="'+options.question+'"><div class="bridget-floating-bridget-chat enter">  <img src="' + assetPath + '/img/comment.png" width="25"> </div> </div>');
+    jQuery(options.containerId).html('<div class="bridget-bridget-chat-btn active" id="bridget-bridget-chat-btn-'+removeHash(options.bridgitId)+'"> <input type="hidden" class="bridgit-url" value="'+options.url+'"><input type="hidden" class="bridgit-question" value="'+options.question+'"><input type="hidden" class="bridgit-name" value="'+options.bridgitName+'"><div class="bridget-floating-bridget-chat enter">  <img src="' + assetPath + '/img/comment.png" width="25"> </div> </div>');
     jQuery(options.containerId).append('<section class="bridgit-messenger"> <div class="bridget-menu" id="bridgit-messenger-'+removeHash(options.bridgitId)+'"> <div class="button-bridgit">x</div> </div> <div class="bridget-chat"> <div class="bridget-chat-title"><span class="logo_bridgit"><img src="img/logo.png"></span> </div> <div id="'+removeHash(options.bridgitId)+'">Loading... </div>   </div> </section>');
     jQuery(options.bridgitId).css({'height':'98%','overflow': 'hidden'});
     jQuery('.bridgit-messenger').css({'height':'98%','overflow': 'hidden'});
@@ -65,13 +67,13 @@ var Bridgit=(function(){
     };
     head.appendChild(script);
   }
-  addIframe=function(id,url,question){
+  addIframe=function(id,url,question,bridgitName){
     var bridgetFingerprint = localStorage.getItem('bridget-fingerprint');
     if(!bridgetFingerprint){
       var bridgetFingerprint = new Date().getTime() + Math.random();
       localStorage.setItem("bridget-fingerprint", bridgetFingerprint);   
     }
-    iFrameNewUrl=iFrameUrl+'?bridget_url='+url+'&fingerPrint='+bridgetFingerprint+'&openStatus=0&bridget_question='+question;
+    iFrameNewUrl=iFrameUrl+'?bridget_url='+url+'&fingerPrint='+bridgetFingerprint+'&openStatus=0&bridget_question='+question+'&bridget_name='+bridgitName;
     var $frame = jQuery('<iframe style="width:100%; height:100%;" src="' + iFrameNewUrl + '" frameborder="0" id="'+id+'">');
     jQuery('#bridgit-'+id).html($frame);
   }
@@ -81,7 +83,7 @@ var Bridgit=(function(){
       toggleChatBtn();      
       jQuery(this).toggleClass('active');
       jQuery(this).parents('.bridget_container').find('.bridgit-messenger').toggleClass('active');
-      addIframe($(this).attr('id').split('-').pop(),$(this).find('.bridgit-url').val(),$(this).find('.bridgit-question').val());
+      addIframe($(this).attr('id').split('-').pop(),$(this).find('.bridgit-url').val(),$(this).find('.bridgit-question').val(),$(this).find('.bridgit-name').val());
     });
 
     $('.bridget-menu').click(function (e) {

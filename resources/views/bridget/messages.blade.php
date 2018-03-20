@@ -92,6 +92,7 @@ use App\ProfanityFilter;
 	var pageUrl="<?php echo $param; ?>";
 	var fingerprint = "<?php echo $fingerPrint;?>";
 	var bridgitQuestion="<?php echo $bridgitQuestion;?>";
+	var bridgitName="<?php echo $bridgitName;?>";
 	$.ajaxSetup({
 		headers: { 'x-fingerprint': fingerprint }
 	});

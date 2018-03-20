@@ -193,7 +193,7 @@ var Bridgit=(function(){
 
 function userNameFormHtml()
 {
-	return 'My name is Bridgit, what can I call you?<br>'+
+	return 'My name is '+bridgitName+', what can I call you?<br>'+
 	'<input class="name_field" type="text" placeholder="Enter name...">'+
 	'<div class="timestamp"></div>'+
 	'<span class="cursor_pointer anonymous-post-btn">Or Post as anonymous</span>';
@@ -248,12 +248,17 @@ function displayNewMessage(data)
 {  
 	typingMsg.removeTypingMsg();
 	$(domElements.noComments).hide();
-	$(domElements.chatContainer).append(data.message); 
+	var msg=data.message;
+	msg_other=msg.replace(/((http|https)\:\/\/)?[a-zA-Z0-9\.\/\?\:@\-_=#]+\.([a-zA-Z0-9\&\.\/\?\:@\-_=#])*/,'');
+	
+
 	if(fingerprint!=data.commentFingerPrint){
+		$(domElements.chatContainer).append(msg_other);
 		$('#commentuser-'+data.commentId).html(data.username);
 		$('#comment-'+data.commentId).find('.message').removeClass('message-personal');
 		$('#comment-'+data.commentId).find('.user-action').remove();
-	}else{        
+	}else{  
+		$(domElements.chatContainer).append(msg);      
 		$(domElements.messageTextBox).val('');
 		$(domElements.messageTextBox).keyup();
 	}
@@ -424,7 +429,8 @@ function updateScrollbar(position='bottom')
 {
 	$(domElements.messagesContainer).mCustomScrollbar("update").mCustomScrollbar('scrollTo', position, {
 		scrollInertia: 0,
-		timeout: 0
+		timeout: 0,
+		scrollEasing: "linear"
 	});
 }
 

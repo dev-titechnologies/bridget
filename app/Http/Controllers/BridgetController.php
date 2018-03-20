@@ -19,6 +19,7 @@ class BridgetController extends Controller
 		$param = $request->input('bridget_url');
 		$excludedIds=$request->input('excluded_ids')?explode(',',$request->input('excluded_ids')):[];
 		$bridgitQuestion=$request->input('bridget_question');
+		$bridgitName=$request->input('bridget_name');
 		$parentComments=BridgetComments::getParents($param,BridgetComments::COMMENTLIMIT,$excludedIds);
 		if(!BridgetUrl::isUrlExist($param)){
 			BridgetUrl::addUrl($param);
@@ -54,7 +55,8 @@ class BridgetController extends Controller
 				'channelId'=>$url->_id,
 				'commentIds'=>$commentIds,
 				'fingerPrint'=>$fingerPrint,
-				'bridgitQuestion'=>$bridgitQuestion
+				'bridgitQuestion'=>$bridgitQuestion,
+				'bridgitName'=>$bridgitName
 				]);	
 		}
 
@@ -88,7 +90,8 @@ class BridgetController extends Controller
 					'message'=> $commentHtml,
 					'username'=>$comment->username,
 					'commentId'=>$comment->_id,
-					'commentFingerPrint'=>$comment->browser_fingerprint
+					'commentFingerPrint'=>$comment->browser_fingerprint,
+					'otherUserMsg'=>BridgetComments::urlReplace($commentHtml)
 					);
 				event(new \App\Events\SendMessage($commentData,$channel->_id));
 			}

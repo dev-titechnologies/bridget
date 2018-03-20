@@ -106,8 +106,13 @@ class BridgetComments extends Eloquent
 		if($comment->browser_fingerprint==self::getFingerPrint()){
 			return nl2br($profinityFilterdComment); 
 		}else{
-			return preg_replace('/\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|$!:,.;]*[A-Z0-9+&@#\/%=~_|$]/i', '', nl2br($profinityFilterdComment));
+			return self::urlReplace($profinityFilterdComment);
 		}
+	}
+
+	public static function urlReplace($body)
+	{
+		return preg_replace('/((http|https)\:\/\/)?[a-zA-Z0-9\.\/\?\:@\-_=#]+\.([a-zA-Z0-9\&\.\/\?\:@\-_=#])*/', '', nl2br($body));
 	}
 
 
