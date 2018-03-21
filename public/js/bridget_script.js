@@ -111,16 +111,28 @@ var jsonStorage=(function(){
 		return JSON.parse(storage.getItem(item));
 	},
 	updateByKey=function(item,key,status){
-		jsonObject=JSON.parse(storage.getItem(item));
-		jsonObject[key]=status;
-		storage.setItem(item,JSON.stringify(jsonObject)); 
-		
+		if(!storage.getItem(item)){
+			object={};
+			object[pageUrl] = status;
+			storage.setItem(item,JSON.stringify(object))
+		}else{
+			jsonObject=JSON.parse(storage.getItem(item));
+			jsonObject[key]=status;
+			storage.setItem(item,JSON.stringify(jsonObject)); 
+		}		
+	}
+	getByKey=function(item,key){
+		if(!storage.getItem(item)){
+			return false;
+		}
+		return JSON.parse(storage.getItem(item))[key];
 	}
 	return {
 		init:init,
 		setStorage:setStorage,
 		getStorage:getStorage,
-		updateByKey:updateByKey
+		updateByKey:updateByKey,
+		getByKey:getByKey
 	}
 
 })();
@@ -257,7 +269,7 @@ function displayNewMessage(data)
 	var msg=data.message;
 	msg_other=msg.replace(/((http|https)\:\/\/)?[a-zA-Z0-9\.\/\?\:@\-_=#]+\.([a-zA-Z0-9\&\.\/\?\:@\-_=#])*/,'');
 	
-
+	$(domElements.pinnedMsgContainer).hide();
 	if(fingerprint!=data.commentFingerPrint){
 		$(domElements.chatContainer).append(msg_other);
 		$('#commentuser-'+data.commentId).html(data.username);
@@ -605,10 +617,11 @@ function typingtimeoutFunction()
 	},6000);
 }
 
-function showWhatDoYouThink()
+function isUrlNotInArray()
 {
-	if(!storage.getItem('bridget-username')){
-		return true;
+	//undefined or false case
+	if(!jsonStorage.getByKey('wdyt',pageUrl)){
+		return true;		
 	}
 }
 
@@ -644,9 +657,10 @@ function toggleReplyBox(pk)
 	$(domElements.pageLoader).hide();
 	$(domElements.contentWrapper).show();
 	
+
 	//display what do you think?
-	if(showWhatDoYouThink()){
-		// no comments yet 
+	if(isUrlNotInArray() || !storage.getItem('bridget-username')){
+		jsonStorage.updateByKey('wdyt',pageUrl,true);
 		if($(domElements.commentIds).val()==''){
 			typingMsg.init();
 			typingMsg.showTypingUser('Bridgit');
@@ -731,7 +745,6 @@ function toggleReplyBox(pk)
     		updateUserName($(this).val()); 
     		updateDisplayName(jsonStorage.getStorage('myCommentIds'),$(this).val());
     		storage.setItem('bridget-username',$(this).val());
-    		/*jsonStorage.updateByKey('whatdoyouthink',pageUrl,true);*/   
     		$(domElements.botResponse).html('Thank you'+' '+$(this).val());     
     		$(domElements.botResponse).addClass('new'); 
     		setTimeout(function(){ $(domElements.botContainer).hide(); }, 3000);
