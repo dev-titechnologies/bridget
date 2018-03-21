@@ -211,6 +211,7 @@ Message Box
   height: 14px;*/
   border: 1px solid #ccc;
   margin-bottom: 0;
+  resize: none;
 }
 
 .message-box .message-input {
@@ -622,8 +623,15 @@ opacity: 0.9;
   text-align: left;
   margin-bottom: 8px;
   margin-top: 3px;
-}
 
+}
+.user-edit-action {
+  top: unset !important;
+  margin-right: -10px;
+}
+.reply-to-comment{
+  position: relative;
+}
 /* NEW CSS*/
 
 .no-comments{
@@ -761,7 +769,7 @@ textarea:focus, input:focus{
 
 @media (max-device-width: 667px) {
 
-  
+
 }
 
 .dropbtn {
@@ -819,7 +827,7 @@ textarea:focus, input:focus{
   font-size: 11px;
   text-align: right;
 }
-.edited-comment{
+.edited-label{
   font-weight: bold;
   font-size: 12px;
   color: #ccc;
@@ -851,7 +859,7 @@ textarea:focus, input:focus{
 }
 
 .pinned-msg-container .avatar{
- 
+
   z-index: 1;
   -webkit-border-radius: 30px;
   -moz-border-radius: 30px;
@@ -875,4 +883,10 @@ textarea:focus, input:focus{
 }
 .clear{
   clear:both;
+}
+textarea{
+  overflow: hidden;
+}
+.user-edit-replay{
+  display: none;
 }

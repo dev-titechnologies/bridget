@@ -47,7 +47,7 @@ class BridgetComments extends Eloquent
 	public static function addMessage($comment,$parentId,$url,$browserFingerPrint,$userName)
 	{
 		$bridgetComment=new self();
-		$bridgetComment->comment=htmlentities($comment);
+		$bridgetComment->comment=$comment;
 		$bridgetComment->parent_id=$parentId;
 		$bridgetComment->url=$url;
 		$bridgetComment->browser_fingerprint=$browserFingerPrint;

@@ -39,13 +39,19 @@ var domElements=(function(){
 		'toggleCommentBox':'.toggle-comment-box',
 		'editElements':'.edit-ele',
 		'cancelEdit':'.cancel-edit',
-		'oldCommentId':'#old-comment-id',
+		'oldCommentId':'.old-comment-id',
 		'editMyReply':'.edit-my-reply',
 		'pageLoader':'#page-loader',
 		'contentWrapper':'#content-wrapper',
 		'pinnedMsg':'#pinned-msg',
-		'pinnedMsgContainer':'.pinned-msg-container'
-
+		'pinnedMsgContainer':'.pinned-msg-container',
+		'messageWrapper':'.message',
+		'editedLabel':'.edited-label',
+		'userComment':'.user-comment',
+		'commentReply':'.comment-reply',
+		'userEditReplyBox':'.user-edit-replay',
+		'commentReplyContainer':'.comment-reply-container',
+		'cancelEditReply':'.cancel-edit-reply'
 	}
 
 })();
@@ -316,7 +322,7 @@ function sendMsg(parentId,msg,url,fingerPrint)
 	});
 }
 
-function sendEditedMessage()
+function sendEditedMessage(commentId,comment)
 {   
 
 	return $.ajax({
@@ -325,8 +331,8 @@ function sendEditedMessage()
 		data: {
 			'_token': getCsrfToken(),
 			'bridget_url':pageUrl,
-			'_id':$(domElements.oldCommentId).val(),
-			'edited_comment':$(domElements.editCommentBox).val()
+			'_id':commentId,
+			'edited_comment':comment
 
 		},
 		dataType: "json",
@@ -517,21 +523,17 @@ function getOriginalComment(commentId)
 function editComment(commentId)
 {
 	getOriginalComment(commentId).done(function(response) {     
-		$(domElements.addCommentBox).hide();
-		$(domElements.editElements).show();
-		$(domElements.editCommentBox).val(response.comment);
-		$(domElements.editCommentBox).focusToEnd();
-		var offset = $(domElements.editCommentBox).offsetHeight - $(domElements.editCommentBox).clientHeight;
-
-    //resizeTextarea($(domElements.editCommentBox),offset);
-    $(domElements.editCommentBox).keyup();
-});
+		$('#comment-'+commentId).find(domElements.editElements).show();
+		$('#edit-'+commentId).val(response.comment);
+		$('#edit-'+commentId).focusToEnd();	
+		$('#edit-'+commentId).keyup();
+	});
 }
 function showEditedMessage(data)
 {    
+	//data.userComment
 	$('#comment-'+data.commentId).find('.user-comment').html(data.newComment);
-	$('#comment-'+data.commentId).find('.edited-comment').html('Edited');
-	cancelEdit();
+	$('#comment-'+data.commentId).find('.edited-label').html('Edited');
 	reEnableTextBox();
 }
 
@@ -540,11 +542,6 @@ function resizeTextarea(el,offset)
 	jQuery(el).css('height', 'auto').css('height', el.scrollHeight + offset);
 }
 
-function cancelEdit()
-{
-	$(domElements.editElements).hide();
-	$(domElements.addCommentBox).show();
-}
 
 function ajaxSuccessReplay(request,$input)
 {
@@ -615,32 +612,37 @@ function showWhatDoYouThink()
 	}
 }
 
-
-
-(function(){
-
+function textAreaResize()
+{
 	jQuery.each(jQuery('textarea[data-autoresize]'), function() {
 		var offset = this.offsetHeight - this.clientHeight;
 		jQuery(this).on('keyup input', function() { resizeTextarea(this,offset); }).removeAttr('data-autoresize');
 	});
+}
+
+function getId(ele)
+{
+	return ele.split('-')[1];
+}
+
+function toggleEditBox(pk)
+{
+	$('#comment-'+pk).find(domElements.messageWrapper).toggle();  
+	$('#comment-'+pk).find(domElements.editElements).toggle(); 
+}
+
+function toggleReplyBox(pk)
+{
+	$('#reply-'+pk).find(domElements.commentReplyContainer).toggle(); 
+	$('#reply-'+pk).find(domElements.editElements).toggle(); 
+}
+
+
+(function(){
+
+	textAreaResize();
 	$(domElements.pageLoader).hide();
 	$(domElements.contentWrapper).show();
-/*	displayWhatDoYouThink=true;
-
-	if(!jsonStorage.getStorage('whatdoyouthink')){
-		tmpArray=[];
-		tmpArray[pageUrl]=false;
-		jsonStorage.setStorage(tmpArray,'whatdoyouthink');
-	}
-	
-	else if (typeof jsonStorage.getStorage('whatdoyouthink')[pageUrl] === "undefined") {		
-		tmpArray=jsonStorage.getStorage('whatdoyouthink');
-		tmpArray[pageUrl]=false;
-		jsonStorage.setStorage(tmpArray,'whatdoyouthink');
-	}
-	else if(jsonStorage.getStorage('whatdoyouthink')[pageUrl]){
-		displayWhatDoYouThink=false;
-	}*/
 	
 	//display what do you think?
 	if(showWhatDoYouThink()){
@@ -686,11 +688,12 @@ function showWhatDoYouThink()
 
 	$(document).on('click',domElements.sendMessageBtn,function(){
 		userTypeStatus.updateUserTouchStatus(true);
-		$(domElements.addCommentBox).is(":visible")?sendNewMessage():sendEditedMessage();
+		sendNewMessage();
 	})
     //userAction
     $(document).on('click',domElements.userAction,function(event){
     	event.stopPropagation();
+    	$(domElements.userAction).next('ul').hide();
     	$(this).next('ul').toggle();
     })
 
@@ -705,20 +708,9 @@ function showWhatDoYouThink()
     	var pk=$(this).data('pk');       
     	deleteComment(pk).done(function(response) { 
     		$('#reply-'+pk).remove();
-    		//$(this).parent().parent().find('.see-all-replay').html(response.noOfReply)
-    		//$()
     	});
 
     });
-
-    $(document).on('click',domElements.editMyComment,function(){
-    	$(this).parents('ul').hide();
-    	$('#old-comment-id').val($(this).data('pk'));
-    	editComment($(this).data('pk'));
-    });
-
-
-
 
     $(document).on('keypress input',domElements.messageTextBox,function(){
     	userTypeStatus.updateUserTouchStatus(true);
@@ -769,40 +761,94 @@ function showWhatDoYouThink()
     		sendNewMessage();
     	}
     });
-
+    /*=========================================*/
+    /*Edit Parent Comment Event Listner Start*/
     $(document).on('keypress',domElements.editCommentBox,function(e){ 
-
+    	var cachedId=$(this).prev(domElements.oldCommentId).val();
     	var keycode = (e.keyCode ? e.keyCode : e.which);
     	if (keycode == 13 && e.shiftKey) {        
     		e.stopPropagation();
     	}
     	else if(keycode == '13'){
-    		sendEditedMessage();
+    		
+    		sendEditedMessage(cachedId,$(this).val())
+    		.done(function(response){
+    			reEnableTextBox();
+    			toggleEditBox(cachedId);
+    		});
+    	}else if (keycode == '27') { 
+    		toggleEditBox(cachedId);
     	}
     });
 
-    $(document).on('keypress','.user-edit-replay',function(e){ 
+
+    $(document).on('click',domElements.cancelEdit,function(e){  	
+    	toggleEditBox(getId($(this).attr('id')));
+    });
+
+    $(document).on('click',domElements.editMyComment,function(){
+    	pk=$(this).data('pk');
+    	toggleEditBox(pk);    	
+    	editComment(pk);
+    });
+
+    $(document).on('keyup',domElements.editCommentBox,function(e){ 
+    	var keycode = (e.keyCode ? e.keyCode : e.which);
+    	var cachedId=$(this).prev(domElements.oldCommentId).val();
+    	if (keycode == '27') { 
+    		toggleEditBox(pk);    
+    	}
+    });
+    /*Edit Parent Comment Event Listner End*/
+    /*=========================================*/
+
+    /*=========================================*/
+    /*Edit child Comment Event Listner Start*/
+    $(document).on('keypress',domElements.userEditReplyBox,function(e){ 
 
     	var keycode = (e.keyCode ? e.keyCode : e.which);
+    	var commentId=$(this).prev('.old-reply-id').val();
     	if (keycode == 13 && e.shiftKey) {        
     		e.stopPropagation();
     	}
     	else if(keycode == '13'){
     		var ele=$(this);
-    		var commentId=$(this).prev('.old-reply-id').val();
+    		
     		var comment=$(this).val();
     		sendEditedReply(commentId,comment)
     		.done(function(response){
     			reEnableTextBox();
+    			toggleReplyBox(commentId);
     			$('#reply-'+commentId).find('.comment-reply').html(response.newComment);
-    			$('#reply-'+commentId).find('.edited-comment').html('Edited');
-    			$(ele).parents('.child_comment_container').find('.user-replay').show();
-    			$(ele).parents('.child_comment_container').find('.user-edit-replay').hide();
-    			$(ele).parents('.child_comment_container').find('.cancel-edit-reply').hide();
+    			$('#reply-'+commentId).find('.edited-label').html('Edited');
     		});
     	}
     });
 
+    $(document).on('keyup',domElements.userEditReplyBox,function(e){ 
+    	var keycode = (e.keyCode ? e.keyCode : e.which);
+    	var commentId=$(this).prev('.old-reply-id').val();
+    	if (keycode == '27') { 
+    		toggleReplyBox(commentId);
+    	}
+    });
+
+    $(document).on('click',domElements.editMyReply,function(e){
+    	var ele=$(this);
+    	getOriginalComment($(this).data('pk')).done(function(response) { 
+    		toggleReplyBox($(ele).data('pk'));
+    		$(ele).parents('#reply-'+$(ele).data('pk')).find(domElements.userEditReplyBox).val(response.comment);
+    		$(ele).parents('#reply-'+$(ele).data('pk')).find('.user-edit-replay').focusToEnd();
+    		$(ele).parents('#reply-'+$(ele).data('pk')).find('.user-edit-replay').keyup();
+    	});
+    });
+
+    $(document).on('click',domElements.cancelEditReply,function(e){
+    	var ele=$(this); 
+    	toggleReplyBox(getId($(this).attr('id'))); 
+    });
+    /*=========================================*/
+    /*Edit child Comment Event Listner End*/
 
     $(document).on('keypress',domElements.userReplayInput,function(e){   
 
@@ -849,29 +895,6 @@ function showWhatDoYouThink()
     	$(this).prev('div').show();
     	var parentDiv=$(this).parent().parent();;
     	$(parentDiv).find(domElements.childCommentContainer).hide();
-    });
-
-    $(document).on('click',domElements.cancelEdit,function(e){  
-    	cancelEdit();
-    });
-
-    $(document).on('click','.cancel-edit-reply',function(e){  
-    	$(this).parents('.child_comment_container').find('.user-replay').show();
-    	$(this).parents('.child_comment_container').find('.user-edit-replay').hide();
-    	$(this).parents('.child_comment_container').find('.cancel-edit-reply').hide();
-    });
-
-    $(document).on('click',domElements.editMyReply,function(e){
-    	var ele=$(this);
-    	getOriginalComment($(this).data('pk')).done(function(response) {   
-    		$(ele).parents('.child_comment_container').find('.user-edit-replay').show();
-    		$(ele).parents('.child_comment_container').find('.cancel-edit-reply').show();
-    		$(ele).parents('.child_comment_container').find('.user-replay').hide();
-    		$(ele).parents('.child_comment_container').find('.old-reply-id').val($(ele).data('pk'));
-    		$(ele).parents('.child_comment_container').find('.user-edit-replay').val(response.comment);
-    		$(ele).parents('.child_comment_container').find('.user-edit-replay').focusToEnd();
-    		$(ele).parents('.child_comment_container').find('.user-edit-replay').keyup();
-    	});
     });
 
     $(window).click(function() {

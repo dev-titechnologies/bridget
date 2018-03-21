@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\BridgetComments;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -13,7 +14,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        BridgetComments::saving(function ($commentInstance) {
+            $commentInstance->comment=htmlentities($commentInstance->comment);
+            return true;
+        });
     }
 
     /**
