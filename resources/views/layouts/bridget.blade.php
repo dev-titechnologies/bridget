@@ -6,10 +6,11 @@
 	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="{{ URL::asset('css/normalize.min.css') }}">
 	<link rel="stylesheet" href="{{ URL::asset('css/bridgit_style.css') }}">	
-	<link rel="stylesheet" href="{{ URL::asset('css/jquery.mCustomScrollbar.min.css') }}">	
+	<!-- <link rel="stylesheet" href="{{ URL::asset('css/jquery.mCustomScrollbar.min.css') }}">	 -->
 	<meta name="csrf-token" content="{{ csrf_token() }}" />	
 	<script src="{{ URL::asset('js/jquery.min.js') }}"></script>
-	<script src="{{ URL::asset('js/jquery.mCustomScrollbar.concat.min.js') }}"></script>
+	<!-- <script src="{{ URL::asset('js/jquery.mCustomScrollbar.concat.min.js') }}"></script> -->
+	<script type="text/javascript" src="{{ URL::asset('js/jquery.slimscroll.min.js') }}"></script>
 	<script src="{{ URL::asset('js/bridgit-timeago.js') }}"></script>	
 	<script>var baseUrl="<?php echo URL::to('/'); ?>"</script>
 </head>

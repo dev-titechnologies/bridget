@@ -32,7 +32,7 @@ use App\ProfanityFilter;
 					</div>
 					<div class="message bot">
 						<figure class="avatar">
-							<img src="img/bot.png">
+							<img src="{{ URL::asset('img/bot.png') }}">
 						</figure>
 						<div  class="bot-response">
 

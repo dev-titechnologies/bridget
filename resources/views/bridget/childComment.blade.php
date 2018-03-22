@@ -15,12 +15,7 @@ use App\BridgetComments;
 		</ul>
 		@endif	
 		<span class="comment-reply">	
-			<?php echo BridgetComments::formatComment($comment); ?></span>
-
-
-
-
-			
+			<?php echo BridgetComments::formatComment($comment); ?></span>			
 			<br>
 
 			<span class="edited-label">

@@ -1,6 +1,7 @@
 var selectedElement=null;
 var deleteMsgCount=0;
 var currentTime=new Date().getTime();
+var scrollContainer;
 
 
 var domElements=(function(){
@@ -445,11 +446,8 @@ function getParentId(ele)
 
 function updateScrollbar(position='bottom') 
 {
-	$(domElements.messagesContainer).mCustomScrollbar("update").mCustomScrollbar('scrollTo', position, {
-		scrollInertia: 0,
-		timeout: 0,
-		scrollEasing: "linear"
-	});
+	console.log(scrollContainer);
+	$(scrollContainer).slimScroll({scrollTo: $(scrollContainer)[0].scrollHeight});
 }
 
 function disableTextBox()
@@ -589,8 +587,9 @@ function getUrlVar()
 function checkScrollTop(el)
 {
 
-	if(el.mcs.top==0){
-		var firstChild=$('.chat-content').children(":first")
+	if($(el).scrollTop()==0){
+		var firstChild=$('.chat-content').children(":first");
+		console.log($(firstChild).find('.message').offset());
 		var ele=$(domElements.loadPreviousComment);  
 		bridgetLoader.init($(ele));    
 		loadPreviousComment($(domElements.commentIds).val()).done(function(response){ 
@@ -601,10 +600,12 @@ function checkScrollTop(el)
 				if(!response.showLoadMore){                    
 					$(domElements.loadPreviousComment).hide();            
 				}else{
-					$('.chat-content').find('.message').removeClass('new');
-					updateScrollbar($(firstChild).find('.message').offset().top-200);
+					$('.chat-content').find('.message').removeClass('new');				
 				}
-
+				if ($(firstChild).find('.message').offset() !== undefined) {
+					$(scrollContainer).slimScroll({ scrollTo: $(firstChild).find('.message').offset().top});					
+				}
+				
 			}
 		});
 	}
@@ -689,17 +690,26 @@ function toggleReplyBox(pk)
 		typingtimeoutFunction();
 	}
 
-	$(domElements.messagesContainer).mCustomScrollbar({
+/*	$(domElements.messagesContainer).mCustomScrollbar({
 		callbacks:{
 			onScroll:function(){
 				checkScrollTop(this);
 			},
 		},
-	});	
+	});	*/
 
+	scrollContainer=$('#scroll-container');
+	$(scrollContainer).slimScroll({
+		height: '98%',
+		start: 'bottom',
+		wheelStep : 200,	
+	});
+
+	$(scrollContainer).on('scroll', function() {
+		checkScrollTop(this);
+	});
 
 	updateScrollbar();
-
 	$(document).on('click',domElements.sendMessageBtn,function(){
 		userTypeStatus.updateUserTouchStatus(true);
 		sendNewMessage();
